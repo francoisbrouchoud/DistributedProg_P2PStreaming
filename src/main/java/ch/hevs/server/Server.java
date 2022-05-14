@@ -1,5 +1,7 @@
 package ch.hevs.server;
 
+import ch.hevs.client.PairToPair;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
@@ -21,19 +23,14 @@ public class Server {
     Scanner scan;
 
     public static void main(String[] args) {
-        int port = Integer.parseInt(args[0]);
-        ServerSocket mySkServer = null;
-        try {
-            mySkServer = new ServerSocket(port);
-            System.out.println("Used IpAddress :" + mySkServer.getInetAddress());
-            System.out.println("Listening to Port :" + mySkServer.getLocalPort());
 
-            while (true){
-                mySkServer.accept();
-            }
+        //TODO scan to find current ip and port
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ServerSocket mySkServer = new ServerSocket(45007,10,localAddress);
+
+        ServerConnexion server = new ServerConnexion(mySkServer);
+        Thread t = new Thread(server);
+
+        t.start();
     }
 }
