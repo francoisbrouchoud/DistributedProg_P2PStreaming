@@ -24,7 +24,6 @@ import java.util.Scanner;
  *      - Download le fichier Si document ???
  */
 public class Client {
-    Socket clientSocket;
     static ServerPairToPair server;
     public static InetAddress serverAddress;
     public static int serverPort;
@@ -67,6 +66,9 @@ public class Client {
                     break;
                 case "d":
                     ask(console);
+                    break;
+                case "e":
+                    exit = true;
                     break;
             }
         } while (!exit);
@@ -113,6 +115,9 @@ public class Client {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionClientServer.GET_FILES_LIST.ordinal());
             ArrayList<FileInfo> files = getFilesList(buffIn);
+            for (FileInfo file:files) {
+                System.out.println(file.getFileName()+" on "+file.getIp()+":"+file.getPort());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

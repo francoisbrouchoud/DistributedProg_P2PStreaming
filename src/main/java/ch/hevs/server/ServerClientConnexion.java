@@ -29,7 +29,7 @@ public class ServerClientConnexion implements Runnable{
         try {
             // création des reader et des writer
             BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
-            PrintWriter pOut = new PrintWriter(clientSocketOnServer.getOutputStream());
+            PrintWriter pOut = new PrintWriter(clientSocketOnServer.getOutputStream(),true);
 
             //écoute la commande
             int orderNumber =Integer.parseInt(buffIn.readLine());
@@ -55,6 +55,7 @@ public class ServerClientConnexion implements Runnable{
         }
     }
 
+    // TODO check le delete client
     private void deleteClient() {
         ClientInfo clientToDelete=null;
         for (ClientInfo client: clients) {
@@ -74,9 +75,11 @@ public class ServerClientConnexion implements Runnable{
             for (int i=0;i<nbFiles;i++){
                 files.add(buffIn.readLine());
             }
-            clients.add(new ClientInfo(clientId,ip,port,files));
+            clients.put(new ClientInfo(clientId,ip,port,files));
             System.out.println(clientId +" "+ ip+" "+ port);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -87,8 +90,10 @@ public class ServerClientConnexion implements Runnable{
         for (ClientInfo client:clients) {
             for (String file:client.getFiles()) {
                 files.add(new FileInfo(client.getClientAdresse(),client.getClientPort(),file));
+                System.out.println(client.getClientAdresse()+":"+client.getClientPort()+" "+ file);
             }
         }
+        System.out.println(files.size());
         pOut.println(files.size());
         for (FileInfo file: files) {
             pOut.println(file.getIp());

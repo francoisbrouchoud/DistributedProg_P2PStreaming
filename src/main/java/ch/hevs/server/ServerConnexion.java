@@ -8,13 +8,14 @@ import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class ServerConnexion extends ServerBase {
+    ArrayBlockingQueue<ClientInfo> clients;
     public ServerConnexion(ServerSocket socketServer) {
         super(socketServer);
+        clients = new ArrayBlockingQueue<>(20);
     }
 
     @Override
     public void acceptClient(Socket socket) {
-        ArrayBlockingQueue<ClientInfo> clients = new ArrayBlockingQueue<>(20);
         Thread t = new Thread(new ServerClientConnexion(socket, clients));
         t.start();
     }
