@@ -80,10 +80,12 @@ public class Client {
             Socket clientSocket = new Socket(serverAddress, serverPort);
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionClientServer.DECONNEXION.ordinal());
+            disconnect(pOut);
         } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Merci d'avoir utiliser notre application!");
+        System.exit(0);
     }
 
     private static void share(Scanner console) {
@@ -118,9 +120,15 @@ public class Client {
             for (FileInfo file:files) {
                 System.out.println(file.getFileName()+" on "+file.getIp()+":"+file.getPort());
             }
+            // TODO Ajoute option ecouter un fichier ? faire fonction
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void disconnect(PrintWriter pOut) {
+        pOut.println(server.getServerAddress());
+        pOut.println(server.getServerPort());
     }
 
     private static void shareFilesList(PrintWriter pOut, ArrayList<String> files) {
