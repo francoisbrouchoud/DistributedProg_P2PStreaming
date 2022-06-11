@@ -16,6 +16,11 @@ public class ServerConnexion extends ServerBase {
     public ServerConnexion(ServerSocket socketServer) {
         super(socketServer);
         clients = new ArrayBlockingQueue<>(20);
+        // config logger
+        loggerConfig();
+    }
+
+    public void loggerConfig(){
         Handler consoleHandler = null;
         Handler fileHandler  = null;
         Formatter simpleFormatter = null;
