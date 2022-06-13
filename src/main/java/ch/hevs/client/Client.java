@@ -32,12 +32,18 @@ public class Client {
         Scanner console = new Scanner(System.in);
         //TODO scan to find current ip and port
 
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Saisir l'adresse IP du serveur : ");
+        String ip = sc.next();
+        System.out.print("Saisir le port du serveur : ");
+        int port = sc.nextInt();
+
         // saisit par l'utilisateur
         try {
-            String serverName = "127.0.0.1";//= args[0];
+            String serverName = ip;//= args[0];
             serverAddress = InetAddress.getByName(serverName);
             System.out.println("Get the address of the server : " + serverAddress);
-            serverPort = 56000;//Integer.parseInt(args[1]);
+            serverPort = port;//Integer.parseInt(args[1]);
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
