@@ -5,6 +5,7 @@ import ch.hevs.client.PairToPair;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Scanner;
 
@@ -25,12 +26,58 @@ public class Server {
     public static void main(String[] args) {
 
         //TODO scan to find current ip and port
+        try {
+            //list of all interfaces
+            Enumeration<NetworkInterface> allni;
+            System.out.println("Liste des connexions disponibles : ");
+            ArrayList<InetAddress> inetAddresses = new ArrayList<InetAddress>();
+            allni = NetworkInterface.getNetworkInterfaces();
+            int connexionNumber = 1;
+            while(allni.hasMoreElements()) {
+                NetworkInterface nix = allni.nextElement();
+                //get the interfaces names if connected
+                if (nix.isUp()){
+                    Enumeration<InetAddress> LocalAddress =  nix.getInetAddresses();
 
-        ServerSocket mySkServer = new ServerSocket(45007,10,localAddress);
+                    while(LocalAddress.hasMoreElements()) {
+                        InetAddress ia = LocalAddress.nextElement();
+                        if(!ia.isLinkLocalAddress() && ia instanceof Inet4Address) {
+                            if(!ia.isLoopbackAddress()) {
+                                System.out.println("Interface réseau " + connexionNumber + " : " + nix.getName() + " -> IP :  " + ia.getHostAddress());
+                                inetAddresses.add(ia);
+                                connexionNumber++;
+                            }
+                        }
+                    }
+                }
+            }
 
-        ServerConnexion server = new ServerConnexion(mySkServer);
-        Thread t = new Thread(server);
+            int choice = -1;
+            System.out.println("**********************************************");
+            while (choice >= connexionNumber || choice <= 0 ){
+                System.out.print("Saisir la connexion voulue (1 - "+ (connexionNumber-1) +") : ");
+                Scanner sc = new Scanner(System.in);
+                choice = sc.nextInt();
 
-        t.start();
+            }
+
+            InetAddress localAddress = inetAddresses.get(choice-1);
+            System.out.println("L'adresse IP du serveur est : " + localAddress.getHostAddress());
+            
+            ServerSocket mySkServer = new ServerSocket(45007,10,localAddress);
+
+            ServerConnexion server = new ServerConnexion(mySkServer);
+            Thread t = new Thread(server);
+
+            t.start();
+
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }
