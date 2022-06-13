@@ -25,6 +25,7 @@ public class Server {
 
     public static void main(String[] args) {
 
+        //Déplacement serveur BASE
         //TODO scan to find current ip and port
         try {
             //list of all interfaces

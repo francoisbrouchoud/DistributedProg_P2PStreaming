@@ -33,6 +33,8 @@ public class Client {
         //TODO scan to find current ip and port
 
         Scanner sc = new Scanner(System.in);
+        //Info pour que le client se connecte sur le serveur
+        //TODO handle ip syntax error before exception + evt log
         System.out.print("Saisir l'adresse IP du serveur : ");
         String ip = sc.next();
         System.out.print("Saisir le port du serveur : ");
@@ -48,6 +50,7 @@ public class Client {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+        // Création P2P server --> déplacer dans Serveur
         // activer l'écoute de connexion
         ServerSocket mySkServer = null;
         try {
@@ -123,14 +126,36 @@ public class Client {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionClientServer.GET_FILES_LIST.ordinal());
             ArrayList<FileInfo> files = getFilesList(buffIn);
-            for (FileInfo file:files) {
-                System.out.println(file.getFileName()+" on "+file.getIp()+":"+file.getPort());
+            int fileId = 1;
+            for (FileInfo file : files) {
+                System.out.println(fileId + ": " + file.getFileName() + " on " + file.getIp() + ":" + file.getPort());
+                fileId++;
             }
             // TODO Ajoute option ecouter un fichier ? faire fonction
+            int idToListen = -1;
+            do {
+                System.out.println("Ecouter un fichier (1-" + (fileId - 1) + ")");
+                idToListen = console.nextInt();
+
+            } while (idToListen !=1 || (idToListen<=0 || idToListen >fileId-1));
+            //TO DO play
+            /*
+            listen(music);
+            System.out.println(idToListen);
+            */
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    /*
+    private static void listen(int music){
+        Socket client = new Socket(IPserverP2P, portServerP2P);
+        //Pause + STOp
+    }
+    
+     */
 
     private static void disconnect(PrintWriter pOut) {
         pOut.println(server.getServerAddress());
