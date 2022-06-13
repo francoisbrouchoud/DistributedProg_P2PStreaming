@@ -52,19 +52,25 @@ public class Server {
                 }
             }
 
-            int choice = -1;
+            int choiceIP = -1;
             System.out.println("**********************************************");
-            while (choice >= connexionNumber || choice <= 0 ){
+            while (choiceIP >= connexionNumber || choiceIP <= 0 ){
                 System.out.print("Saisir la connexion voulue (1 - "+ (connexionNumber-1) +") : ");
                 Scanner sc = new Scanner(System.in);
-                choice = sc.nextInt();
+                choiceIP = sc.nextInt();
 
             }
+            InetAddress localAddress = inetAddresses.get(choiceIP-1);
 
-            InetAddress localAddress = inetAddresses.get(choice-1);
-            System.out.println("L'adresse IP du serveur est : " + localAddress.getHostAddress());
-            
-            ServerSocket mySkServer = new ServerSocket(45007,10,localAddress);
+            int port=-1;
+            while (port < 1024 || port > 65535){
+                System.out.print("Saisir le port voulu : ");
+                Scanner sc = new Scanner(System.in);
+                port = sc.nextInt();
+            }
+            System.out.println("Le serveur est atteignable sur l'IP : " + localAddress.getHostAddress() + " sur le port : " + port);
+
+            ServerSocket mySkServer = new ServerSocket(port,10,localAddress);
 
             ServerConnexion server = new ServerConnexion(mySkServer);
             Thread t = new Thread(server);
