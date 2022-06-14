@@ -79,6 +79,7 @@ public class Client {
                 case "e":
                     exit = true;
                     break;
+
             }
         } while (!exit);
         exit();
@@ -154,7 +155,7 @@ public class Client {
         Socket client = new Socket(IPserverP2P, portServerP2P);
         //Pause + STOp
     }
-    
+
      */
 
     private static void disconnect(PrintWriter pOut) {
