@@ -26,7 +26,10 @@ public class Server extends ServerBase {
     public static void main(String[] args) {
         try {
             Server s = new Server(new ServerSocket());
-            s.createServer();
+            ServerSocket mySkServer = s.createServer();
+            ServerConnexion server = new ServerConnexion(mySkServer);
+            Thread t = new Thread(server);
+            t.start();
         } catch (IOException e) {
             e.printStackTrace();
         }

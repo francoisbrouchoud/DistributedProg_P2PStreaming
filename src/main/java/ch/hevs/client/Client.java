@@ -2,6 +2,8 @@ package ch.hevs.client;
 
 import ch.hevs.common.ActionClientServer;
 import ch.hevs.common.FileInfo;
+import ch.hevs.common.ServerBase;
+import ch.hevs.server.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,12 +25,28 @@ import java.util.Scanner;
  *      - Ecouter le fichier Si music ???
  *      - Download le fichier Si document ???
  */
-public class Client {
+public class Client extends ServerBase {
     static ServerPairToPair server;
     public static InetAddress serverAddress;
     public static int serverPort;
 
+    public Client(ServerSocket socketServer) {
+        super(socketServer);
+    }
+
     public static void main(String[] args) {
+        // Création P2P server --> déplacer dans Serveur
+        // activer l'écoute de connexion
+        try {
+            Client clientServer = new Client(new ServerSocket());
+            ServerSocket mySkServer = clientServer.createServer();
+            server = new ServerPairToPair(mySkServer);
+            Thread t = new Thread(server);
+            t.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Scanner console = new Scanner(System.in);
         //TODO scan to find current ip and port
 
@@ -50,17 +68,7 @@ public class Client {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        // Création P2P server --> déplacer dans Serveur
-        // activer l'écoute de connexion
-        ServerSocket mySkServer = null;
-        try {
-            mySkServer = new ServerSocket(45000, 10, InetAddress.getByName("localhost"));
-            server = new ServerPairToPair(mySkServer);
-            Thread t = new Thread(server);
-            t.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
         // Afficher un menu dans la console
         // switch case en fonction des choix
@@ -187,5 +195,10 @@ public class Client {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void acceptClient(Socket socket) {
+
     }
 }

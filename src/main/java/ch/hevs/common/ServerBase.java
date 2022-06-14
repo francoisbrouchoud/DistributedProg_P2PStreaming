@@ -23,7 +23,7 @@ public abstract class ServerBase implements Runnable{
         Scanner scan;
     }
 
-    public static void createServer(){
+    public static ServerSocket createServer(){
         try {
             //list of all interfaces
             Enumeration<NetworkInterface> allni;
@@ -67,13 +67,13 @@ public abstract class ServerBase implements Runnable{
             } while (!checkChoice);
             serverAddress = inetAddresses.get(choiceIP - 1);
 
-            int port = -1;
+
             boolean checkPort;
             do {
                 System.out.print("Saisir le port voulu (1024-65535) : ");
                 Scanner sc = new Scanner(System.in);
-                port = sc.nextInt();
-                if (port >= 1024 && port <= 65535) {
+                serverPort = sc.nextInt();
+                if (serverPort >= 1024 && serverPort <= 65535) {
                     checkPort = true;
                 } else {
                     System.err.print("Le port saisi n'est pas valide. ");
@@ -82,33 +82,26 @@ public abstract class ServerBase implements Runnable{
                 }
             } while (!checkPort);
 
-            System.out.println("Le serveur est atteignable sur l'IP : " + serverAddress.getHostAddress() + " sur le port : " + port);
+            System.out.println("Le serveur est atteignable sur l'IP : " + serverAddress.getHostAddress() + " sur le port : " + serverPort);
 
-            ServerSocket mySkServer = new ServerSocket(port, 10, serverAddress);
+            ServerSocket mySkServer = new ServerSocket(serverPort, 10, serverAddress);
+            return mySkServer;
 
-            ServerConnexion server = new ServerConnexion(mySkServer);
-            Thread t = new Thread(server);
-            t.start();
 
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public static InetAddress getServerAddress() {
-        try {
-            return InetAddress.getByName("127.0.0.1");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
         return serverAddress;
     }
 
     public static int getServerPort() {
-        return 56000;
-        //return serverPort;
+        return serverPort;
     }
 
     public abstract void acceptClient(Socket socket);
