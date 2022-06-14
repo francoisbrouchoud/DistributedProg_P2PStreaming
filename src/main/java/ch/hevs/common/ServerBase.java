@@ -1,9 +1,6 @@
 package ch.hevs.common;
 
-import ch.hevs.server.ServerConnexion;
-
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -15,15 +12,11 @@ public abstract class ServerBase implements Runnable{
     public static InetAddress serverAddress;
     public static int serverPort ;
 
-    public ServerBase(ServerSocket socketServer){
-        //TODO create socket server here?
-        this.socketServer = socketServer;
-        InetAddress localAddress = null;
-        PrintWriter pout;
-        Scanner scan;
+    public ServerBase(){
+        this.socketServer = createServer();
     }
 
-    public static ServerSocket createServer(){
+    private ServerSocket createServer(){
         try {
             //list of all interfaces
             Enumeration<NetworkInterface> allni;
@@ -35,9 +28,9 @@ public abstract class ServerBase implements Runnable{
                 NetworkInterface nix = allni.nextElement();
                 //get the interfaces names if connected
                 if (nix.isUp()) {
-                    Enumeration<InetAddress> LocalAddress = nix.getInetAddresses();
-                    while (LocalAddress.hasMoreElements()) {
-                        InetAddress ia = LocalAddress.nextElement();
+                    Enumeration<InetAddress> localAddress = nix.getInetAddresses();
+                    while (localAddress.hasMoreElements()) {
+                        InetAddress ia = localAddress.nextElement();
                         if (!ia.isLinkLocalAddress() && ia instanceof Inet4Address) {
                             if (!ia.isLoopbackAddress()) {
                                 System.out.println("Interface réseau " + connexionNumber + " : " + nix.getName() + " -> IP :  " + ia.getHostAddress());

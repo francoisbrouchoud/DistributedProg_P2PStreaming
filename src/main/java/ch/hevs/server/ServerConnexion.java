@@ -13,8 +13,8 @@ public class ServerConnexion extends ServerBase {
     ArrayBlockingQueue<ClientInfo> clients;
     private static final Logger LOGGER = Logger.getLogger(ServerConnexion.class.getName());
 
-    public ServerConnexion(ServerSocket socketServer) {
-        super(socketServer);
+    public ServerConnexion() {
+        super();
         clients = new ArrayBlockingQueue<>(20);
         // config logger
         loggerConfig();

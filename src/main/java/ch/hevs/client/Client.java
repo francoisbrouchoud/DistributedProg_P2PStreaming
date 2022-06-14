@@ -1,16 +1,11 @@
 package ch.hevs.client;
 
 import ch.hevs.common.ActionClientServer;
+import ch.hevs.common.ActionP2P;
 import ch.hevs.common.FileInfo;
-import ch.hevs.common.ServerBase;
-import ch.hevs.server.Server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -25,38 +20,27 @@ import java.util.Scanner;
  *      - Ecouter le fichier Si music ???
  *      - Download le fichier Si document ???
  */
-public class Client extends ServerBase {
+public class Client {
     static ServerPairToPair server;
     public static InetAddress serverAddress;
     public static int serverPort;
 
-    public Client(ServerSocket socketServer) {
-        super(socketServer);
-    }
-
     public static void main(String[] args) {
         // Création P2P server --> déplacer dans Serveur
         // activer l'écoute de connexion
-        try {
-            Client clientServer = new Client(new ServerSocket());
-            ServerSocket mySkServer = clientServer.createServer();
-            server = new ServerPairToPair(mySkServer);
-            Thread t = new Thread(server);
-            t.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        server = new ServerPairToPair();
+        Thread t = new Thread(server);
+        t.start();
 
         Scanner console = new Scanner(System.in);
-        //TODO scan to find current ip and port
 
-        Scanner sc = new Scanner(System.in);
         //Info pour que le client se connecte sur le serveur
         //TODO handle ip syntax error before exception + evt log
         System.out.print("Saisir l'adresse IP du serveur : ");
-        String ip = sc.next();
+        String ip = console.next();
         System.out.print("Saisir le port du serveur : ");
-        int port = sc.nextInt();
+        int port = console.nextInt();
 
         // saisit par l'utilisateur
         try {
@@ -143,36 +127,82 @@ public class Client extends ServerBase {
             int idToListen = -1;
             boolean found = false;
 
-            do {
+            while (!found && files.size() > 0) {
                 System.out.println("Saisir le n° du morceau : ");
                 idToListen = console.nextInt();
 
 
-                for (FileInfo file: files) {
-                    if(file.getFileId() == idToListen) {
-                        System.out.println("Joue " + file.getFileName());
+                for (FileInfo file : files) {
+                    if (file.getFileId() == idToListen) {
+                        System.out.println("Morceau choisi : " + file.getFileName());
+                        int actionPlay;
+                        Scanner sc = new Scanner(System.in);
+                        do {
+                            System.out.println("Télécharger (1) ou Jouer (2)");
+                            actionPlay = sc.nextInt();
+                            if (actionPlay == 1)
+                                download(file);
+                            if (actionPlay == 2)
+                                listen(file);
+                        } while (actionPlay != 1 && actionPlay != 2);
                         found = true;
                     }
                 }
-                if(!found)
+                if (!found)
                     System.out.println("Morceau non trouvé");
                 else {
                     System.out.println("Voulez-vous écouter un autre morceau (1/0)");
                     Scanner sc = new Scanner(System.in);
                     int commandMorceau = sc.nextInt();
 
-                    if(commandMorceau==1){
-                        found=false;
+                    if (commandMorceau == 1) {
+                        found = false;
                     }
-
                 }
-            }while (!found);
-
+            }
 
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void listen(FileInfo file) {
+        System.out.println("Joue " + file.getFileName());
+    }
+
+    private static void download(FileInfo file) {
+        System.out.println("Télécharge " + file.getFileName());
+        try {
+            Socket clientSocket = new Socket(file.getIp(), file.getPort());
+            BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
+            pOut.println(ActionP2P.DOWNLOAD_AUDIO_FILE.ordinal());
+
+
+            int totalsize = Integer.parseInt(Buffin.readLine());
+            String filename = Buffin.readLine();
+            byte[] mybytearray = new byte[totalsize];
+
+            InputStream is = new BufferedInputStream(clientSocket.getInputStream());
+
+            FileOutputStream fos = new FileOutputStream("c://received//" + filename);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            int byteReadTot = 0;
+            while (byteReadTot < totalsize) {
+                int byteRead = is.read(mybytearray, 0, mybytearray.length);
+                byteReadTot += byteRead;
+                bos.write(mybytearray, 0, byteRead);
+
+            }
+
+            bos.close();
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /*
@@ -214,8 +244,4 @@ public class Client extends ServerBase {
         return null;
     }
 
-    @Override
-    public void acceptClient(Socket socket) {
-
-    }
 }

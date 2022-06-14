@@ -9,11 +9,14 @@ import java.net.Socket;
 public class ServerPairToPair extends ServerBase {
 
     //Constructor
-    public ServerPairToPair(ServerSocket s){
-        super(s);
+    public ServerPairToPair(){
+        super();
     }
 
+    @Override
     public void acceptClient(Socket socket){
-        Thread t = new Thread(new PairToPair(socket,nbrClient));
+        System.out.println("ça passe");
+        Thread t = new Thread(new PairToPair(socket));
+        t.start();
     }
 }

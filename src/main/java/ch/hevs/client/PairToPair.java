@@ -3,22 +3,19 @@ package ch.hevs.client;
 import ch.hevs.common.ActionClientServer;
 import ch.hevs.common.ActionP2P;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class PairToPair implements Runnable{
     private Socket clientSocketOnServer;
     private int clientNumber;
 
     //Constructor
-    public PairToPair (Socket clientSocketOnServer, int clientNo)
+    public PairToPair (Socket clientSocketOnServer)
     {
         this.clientSocketOnServer = clientSocketOnServer;
-        this.clientNumber = clientNo;
-
     }
     @Override
     public void run() {
@@ -29,6 +26,7 @@ public class PairToPair implements Runnable{
             PrintWriter pOut = new PrintWriter(clientSocketOnServer.getOutputStream());
             // écoute la commande
             int orderNumber = Integer.parseInt(buffIn.readLine());
+            String filePath = buffIn.readLine();
             ActionP2P order = ActionP2P.values()[orderNumber];
 
 
@@ -37,11 +35,39 @@ public class PairToPair implements Runnable{
             switch (order){
                 case GET_AUDIO_FILE:
                     break;
+                case DOWNLOAD_AUDIO_FILE:
+                    download(filePath);
+                    break;
             }
             clientSocketOnServer.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void download(String filePath){
+        File myFile = new File(filePath);
+        long myFileSize = 0;
+        try {
+            myFileSize = Files.size(Paths.get(filePath));
+            PrintWriter Pout2 = null;
+            Pout2 = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
+            Pout2.println(myFileSize);
+            Pout2.println(filePath);
+
+            byte[] mybytearray = new byte[(int)myFileSize];
+            BufferedInputStream bis = null;
+            bis = new BufferedInputStream(new FileInputStream(myFile));
+            bis.read(mybytearray, 0, mybytearray.length);
+            OutputStream os = null;
+            os = clientSocketOnServer.getOutputStream();
+            os.write(mybytearray, 0, mybytearray.length);
+            os.flush();
+            clientSocketOnServer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

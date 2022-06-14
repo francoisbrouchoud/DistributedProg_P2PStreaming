@@ -1,5 +1,6 @@
 package ch.hevs.common;
 
 public enum ActionP2P {
-    GET_AUDIO_FILE
+    GET_AUDIO_FILE,
+    DOWNLOAD_AUDIO_FILE
 }
