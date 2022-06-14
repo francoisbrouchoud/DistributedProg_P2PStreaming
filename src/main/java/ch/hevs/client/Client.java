@@ -151,7 +151,7 @@ public class Client {
             e.printStackTrace();
         }
     }
-    
+
     //TODO gerer les erreurs si le server n'existe pas ConnectException
     private static void ask(Scanner console) {
         try {

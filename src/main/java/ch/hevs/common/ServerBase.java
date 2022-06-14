@@ -54,6 +54,7 @@ public abstract class ServerBase implements Runnable {
             }
 
             System.out.println("\u27F7 Le serveur est atteignable à l'adresse IP " + mySkServer.getInetAddress().getHostAddress() + " sur le port " + mySkServer.getLocalPort());
+            serverPort = mySkServer.getLocalPort();
             return mySkServer;
 
         } catch (SocketException e) {
