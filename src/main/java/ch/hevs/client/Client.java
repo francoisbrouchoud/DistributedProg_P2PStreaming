@@ -83,6 +83,7 @@ public class Client {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionClientServer.DECONNEXION.ordinal());
             disconnect(pOut);
+            clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,6 +108,7 @@ public class Client {
             pOut.println(ActionClientServer.SHARE_FILE_LIST.ordinal());
             shareFilesList(pOut, files);
             System.out.println("Vos fichiers ont été partagé");
+            clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -123,6 +125,7 @@ public class Client {
             for (FileInfo file : files) {
                 System.out.println(file.getFileId() + ": " + file.getFileName() + " on " + file.getIp() + ":" + file.getPort());
             }
+            clientSocket.close();
             // TODO Ajoute option ecouter un fichier ? faire fonction
             int idToListen = -1;
             boolean found = false;
@@ -219,7 +222,7 @@ public class Client {
     }
 
     private static void shareFilesList(PrintWriter pOut, ArrayList<String> files) {
-        pOut.println(server.getServerAddress());
+        pOut.println(server.getServerAddress().getHostAddress());
         pOut.println(server.getServerPort());
         pOut.println(files.size());
         for (String file : files) {
