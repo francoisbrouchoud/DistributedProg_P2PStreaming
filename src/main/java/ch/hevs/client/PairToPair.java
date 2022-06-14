@@ -16,10 +16,10 @@ public class PairToPair implements Runnable{
     public PairToPair (Socket clientSocketOnServer, int clientNumber)
     {
         this.clientSocketOnServer = clientSocketOnServer;
+        this.clientNumber = clientNumber;
     }
     @Override
     public void run() {
-
         try {
             // création des reader et des writer
             BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
@@ -46,7 +46,8 @@ public class PairToPair implements Runnable{
         }
     }
 
-    private void download(String filePath){
+    private void download(String fileName){
+        String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
         File myFile = new File(filePath);
         long myFileSize = 0;
         try {
@@ -54,7 +55,7 @@ public class PairToPair implements Runnable{
             PrintWriter Pout2 = null;
             Pout2 = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
             Pout2.println(myFileSize);
-            Pout2.println(filePath);
+            Pout2.println(fileName);
 
             byte[] mybytearray = new byte[(int)myFileSize];
             BufferedInputStream bis = null;

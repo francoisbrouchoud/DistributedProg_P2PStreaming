@@ -21,6 +21,8 @@ import java.util.Scanner;
  *      - Download le fichier Si document ???
  */
 public class Client {
+    static final String RECEPTION_FOLDER = "receivedFiles";
+    static final String FILES_TO_SHARE_FOLDER = "sharedFiles";
     static ServerPairToPair server;
     public static InetAddress serverAddress;
     public static int serverPort;
@@ -28,6 +30,15 @@ public class Client {
     public static void main(String[] args) {
         // Création P2P server --> déplacer dans Serveur
         // activer l'écoute de connexion
+
+        File receptionFolder = new File(RECEPTION_FOLDER);
+        if(!receptionFolder.exists()){
+            receptionFolder.mkdir();
+        }
+        File sharedFolder = new File(FILES_TO_SHARE_FOLDER);
+        if(!sharedFolder.exists()){
+            sharedFolder.mkdir();
+        }
 
         server = new ServerPairToPair();
         Thread t = new Thread(server);
@@ -183,6 +194,7 @@ public class Client {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionP2P.DOWNLOAD_AUDIO_FILE.ordinal());
 
+            pOut.println(file.getFileName());
 
             int totalsize = Integer.parseInt(Buffin.readLine());
             String filename = Buffin.readLine();
@@ -190,7 +202,7 @@ public class Client {
 
             InputStream is = new BufferedInputStream(clientSocket.getInputStream());
 
-            FileOutputStream fos = new FileOutputStream("c://received//" + filename);
+            FileOutputStream fos = new FileOutputStream(RECEPTION_FOLDER+"\\" + filename);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             int byteReadTot = 0;
             while (byteReadTot < totalsize) {
