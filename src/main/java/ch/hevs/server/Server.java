@@ -39,7 +39,6 @@ public class Server {
                 //get the interfaces names if connected
                 if (nix.isUp()){
                     Enumeration<InetAddress> LocalAddress =  nix.getInetAddresses();
-
                     while(LocalAddress.hasMoreElements()) {
                         InetAddress ia = LocalAddress.nextElement();
                         if(!ia.isLinkLocalAddress() && ia instanceof Inet4Address) {
@@ -53,22 +52,42 @@ public class Server {
                 }
             }
 
-            int choiceIP = -1;
             System.out.println("**********************************************");
-            while (choiceIP >= connexionNumber || choiceIP <= 0 ){
+            boolean checkChoice = false;
+            int choiceIP = -1;
+            do
+            {
                 System.out.print("Saisir la connexion voulue (1 - "+ (connexionNumber-1) +") : ");
                 Scanner sc = new Scanner(System.in);
                 choiceIP = sc.nextInt();
 
-            }
+                if(choiceIP < connexionNumber && choiceIP > 0 ){
+                    checkChoice = true;
+                }
+                else{
+                    System.err.print("L'interface saisie n'est pas dans la liste. ");
+                    System.out.println();
+                    checkChoice = false;
+                }
+            } while (!checkChoice);
             InetAddress localAddress = inetAddresses.get(choiceIP-1);
 
             int port=-1;
-            while (port < 1024 || port > 65535){
-                System.out.print("Saisir le port voulu : ");
+            boolean checkPort;
+            do{
+                System.out.print("Saisir le port voulu (1024-65535) : ");
                 Scanner sc = new Scanner(System.in);
                 port = sc.nextInt();
-            }
+                if(port >= 1024 && port <= 65535){
+                    checkPort = true;
+                }
+                else{
+                    System.err.print("Le port saisi n'est pas valide. ");
+                    System.out.println();
+                    checkPort = false;
+                }
+            } while (!checkPort);
+
             System.out.println("Le serveur est atteignable sur l'IP : " + localAddress.getHostAddress() + " sur le port : " + port);
 
             ServerSocket mySkServer = new ServerSocket(port,10,localAddress);
