@@ -11,6 +11,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /***
  * Role:
@@ -32,11 +34,11 @@ public class Client {
         // activer l'écoute de connexion
 
         File receptionFolder = new File(RECEPTION_FOLDER);
-        if(!receptionFolder.exists()){
+        if (!receptionFolder.exists()) {
             receptionFolder.mkdir();
         }
         File sharedFolder = new File(FILES_TO_SHARE_FOLDER);
-        if(!sharedFolder.exists()){
+        if (!sharedFolder.exists()) {
             sharedFolder.mkdir();
         }
 
@@ -44,22 +46,12 @@ public class Client {
         Thread t = new Thread(server);
         t.start();
 
-        Scanner console = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
-        //Info pour que le client se connecte sur le serveur
-        //TODO handle ip syntax error before exception + evt log
-        System.out.print("Saisir l'adresse IP du serveur : ");
-        String ip = console.next();
-        System.out.print("Saisir le port du serveur : ");
-        int port = console.nextInt();
-
-        // saisit par l'utilisateur
         try {
-            String serverName = ip;//= args[0];
-            serverAddress = InetAddress.getByName(serverName);
-            System.out.println("Get the address of the server : " + serverAddress);
-            serverPort = port;//Integer.parseInt(args[1]);
-
+            serverAddress = ipInput(sc);
+            System.out.println("\u2714 Adresse du serveur : " + serverAddress.getHostAddress() + " saisie.");
+            serverPort = portInput(sc);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -70,14 +62,14 @@ public class Client {
         boolean exit = false;
         do {
             System.out.println("Vous pouvez envoyer des fichiers à partager(p) ou demander la liste des fichier disponnible (d)");
-            String action = console.next();
+            String action = sc.next();
 
             switch (action) {
                 case "p":
-                    share(console);
+                    share(sc);
                     break;
                 case "d":
-                    ask(console);
+                    ask(sc);
                     break;
                 case "e":
                     exit = true;
@@ -86,6 +78,42 @@ public class Client {
             }
         } while (!exit);
         exit();
+    }
+
+    private static InetAddress ipInput(Scanner sc) throws UnknownHostException {
+        String IP_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$";
+        Pattern pattern = Pattern.compile(IP_REGEX);
+        String ip = "";
+        boolean checkIp = false;
+        do {
+            System.out.print("\u270E Saisir l'adresse IP du serveur : ");
+            ip = sc.next();
+            Matcher matcher = pattern.matcher(ip);
+            if (matcher.matches() == true) {
+                checkIp = true;
+            } else {
+                System.err.println("\u2717 L'IP \"" + ip + "\" ne correspond pas au format IPV4.");
+                checkIp = false;
+            }
+        } while (!checkIp);
+
+        return InetAddress.getByName(ip);
+    }
+
+    private static int portInput(Scanner sc) {
+        boolean checkPort;
+        int port = -1;
+        do {
+            System.out.print("\u270E Saisir le port du serveur (1024-65535) : ");
+            port = sc.nextInt();
+            if (port >= 1024 && port <= 65535) {
+                checkPort = true;
+            } else {
+                System.err.println("\u2717 Le port\"" + port+"\" n'est pas valide. ");
+                checkPort = false;
+            }
+        } while (!checkPort);
+        return port;
     }
 
     private static void exit() {
@@ -102,16 +130,15 @@ public class Client {
         System.exit(0);
     }
 
+    //TODO gerer les erreurs si le server n'existe pas ConnectException
     private static void share(Scanner console) {
         ArrayList<String> files = new ArrayList<>();
         String file = "";
         do {
-            if (!Objects.equals(file, ""))
-                files.add(file);
+            if (!Objects.equals(file, "")) files.add(file);
             System.out.println("ecriver le chemin du fichier si il y en a plus mettre -1: ");
             file = console.next();
-        }
-        while (!Objects.equals(file, "-1"));
+        } while (!Objects.equals(file, "-1"));
 
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
@@ -124,7 +151,8 @@ public class Client {
             e.printStackTrace();
         }
     }
-
+    
+    //TODO gerer les erreurs si le server n'existe pas ConnectException
     private static void ask(Scanner console) {
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
@@ -154,16 +182,13 @@ public class Client {
                         do {
                             System.out.println("Télécharger (1) ou Jouer (2)");
                             actionPlay = sc.nextInt();
-                            if (actionPlay == 1)
-                                download(file);
-                            if (actionPlay == 2)
-                                listen(file);
+                            if (actionPlay == 1) download(file);
+                            if (actionPlay == 2) listen(file);
                         } while (actionPlay != 1 && actionPlay != 2);
                         found = true;
                     }
                 }
-                if (!found)
-                    System.out.println("Morceau non trouvé");
+                if (!found) System.out.println("Morceau non trouvé");
                 else {
                     System.out.println("Voulez-vous écouter un autre morceau (1/0)");
                     Scanner sc = new Scanner(System.in);
@@ -202,7 +227,7 @@ public class Client {
 
             InputStream is = new BufferedInputStream(clientSocket.getInputStream());
 
-            FileOutputStream fos = new FileOutputStream(RECEPTION_FOLDER+"\\" + filename);
+            FileOutputStream fos = new FileOutputStream(RECEPTION_FOLDER + "\\" + filename);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             int byteReadTot = 0;
             while (byteReadTot < totalsize) {

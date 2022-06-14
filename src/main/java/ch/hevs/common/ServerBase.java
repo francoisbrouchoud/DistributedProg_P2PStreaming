@@ -49,7 +49,7 @@ public abstract class ServerBase implements Runnable {
             try {
                 mySkServer = new ServerSocket(serverPort, 10, serverAddress);
             } catch (BindException e) {
-                System.err.println("Le port " + serverPort + " est déjà utilisé. Un port par défaut a été attribué.");
+                System.err.println("\u2717 Le port " + serverPort + " est déjà utilisé. Un port par défaut a été attribué.");
                 mySkServer = new ServerSocket(0, 10, serverAddress);
             }
 
