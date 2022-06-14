@@ -135,23 +135,40 @@ public class Client extends ServerBase {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionClientServer.GET_FILES_LIST.ordinal());
             ArrayList<FileInfo> files = getFilesList(buffIn);
-            int fileId = 1;
+
             for (FileInfo file : files) {
-                System.out.println(fileId + ": " + file.getFileName() + " on " + file.getIp() + ":" + file.getPort());
-                fileId++;
+                System.out.println(file.getFileId() + ": " + file.getFileName() + " on " + file.getIp() + ":" + file.getPort());
             }
             // TODO Ajoute option ecouter un fichier ? faire fonction
             int idToListen = -1;
+            boolean found = false;
+
             do {
-                System.out.println("Ecouter un fichier (1-" + (fileId - 1) + ")");
+                System.out.println("Saisir le n° du morceau : ");
                 idToListen = console.nextInt();
 
-            } while (idToListen !=1 || (idToListen<=0 || idToListen >fileId-1));
-            //TO DO play
-            /*
-            listen(music);
-            System.out.println(idToListen);
-            */
+
+                for (FileInfo file: files) {
+                    if(file.getFileId() == idToListen) {
+                        System.out.println("Joue " + file.getFileName());
+                        found = true;
+                    }
+                }
+                if(!found)
+                    System.out.println("Morceau non trouvé");
+                else {
+                    System.out.println("Voulez-vous écouter un autre morceau (1/0)");
+                    Scanner sc = new Scanner(System.in);
+                    int commandMorceau = sc.nextInt();
+
+                    if(commandMorceau==1){
+                        found=false;
+                    }
+
+                }
+            }while (!found);
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
