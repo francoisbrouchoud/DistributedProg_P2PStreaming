@@ -16,7 +16,7 @@ public class ServerPairToPair extends ServerBase {
     @Override
     public void acceptClient(Socket socket){
         System.out.println("ça passe");
-        Thread t = new Thread(new PairToPair(socket));
+        Thread t = new Thread(new PairToPair(socket, nbrClient));
         t.start();
     }
 }

@@ -13,7 +13,7 @@ public class PairToPair implements Runnable{
     private int clientNumber;
 
     //Constructor
-    public PairToPair (Socket clientSocketOnServer)
+    public PairToPair (Socket clientSocketOnServer, int clientNumber)
     {
         this.clientSocketOnServer = clientSocketOnServer;
     }
