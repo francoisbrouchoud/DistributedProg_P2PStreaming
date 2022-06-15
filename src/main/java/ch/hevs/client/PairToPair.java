@@ -33,10 +33,11 @@ public class PairToPair implements Runnable{
             //TODO switch case des commandes possible
             // Création de fonction par cas
             switch (order){
-                case GET_AUDIO_FILE:
-                    break;
                 case DOWNLOAD_AUDIO_FILE:
                     download(filePath);
+                    break;
+                case GET_AUDIO_FILE:
+                    stream(filePath);
                     break;
             }
             clientSocketOnServer.close();
@@ -45,6 +46,37 @@ public class PairToPair implements Runnable{
             e.printStackTrace();
         }
     }
+
+    private void stream(String fileName){
+        String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
+        File myFile = new File(filePath);
+
+        long myFileSize = 0;
+        try {
+            myFileSize = Files.size(Paths.get(filePath));
+            PrintWriter Pout2 = null;
+            Pout2 = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
+            Pout2.println(myFileSize);
+            Pout2.println(fileName);
+
+            byte[] mybytearray = new byte[(int)myFileSize];
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
+            bis.read(mybytearray, 0, mybytearray.length);
+            bis.close();
+
+            OutputStream os = null;
+            os = clientSocketOnServer.getOutputStream();
+            os.write(mybytearray, 0, mybytearray.length);
+            os.flush();
+            clientSocketOnServer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
 
     private void download(String fileName){
         String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;

@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  *      - Ecouter le fichier Si music ???
  *      - Download le fichier Si document ???
  */
-public class Client {
+public class Client2 {
     static final String RECEPTION_FOLDER = "receivedFiles";
     static final String FILES_TO_SHARE_FOLDER = "sharedFiles";
     static ServerPairToPair server;
