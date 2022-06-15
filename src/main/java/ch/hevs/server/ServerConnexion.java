@@ -3,9 +3,13 @@ package ch.hevs.server;
 import ch.hevs.common.ClientInfo;
 import ch.hevs.common.ServerBase;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.*;
 
@@ -24,6 +28,18 @@ public class ServerConnexion extends ServerBase {
         Handler consoleHandler = null;
         Handler fileHandler  = null;
         Formatter simpleFormatter = null;
+
+        //TODO implementer la creation du fichier
+        final String LOG_FOLDER = "logs";
+        String pattern = "yyyy-MM";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date = simpleDateFormat.format(new Date());
+        File logFile = new File(LOG_FOLDER + "\\" + date +".log");
+        if (!logFile.exists()) {
+            logFile.mkdir();
+        }
+
+
         try{
             //Creating consoleHandler and fileHandler
             consoleHandler = new ConsoleHandler();
@@ -38,9 +54,9 @@ public class ServerConnexion extends ServerBase {
             LOGGER.addHandler(fileHandler);
 
             //Setting levels to handlers and LOGGER
-            consoleHandler.setLevel(Level.ALL);
-            fileHandler.setLevel(Level.ALL);
-            LOGGER.setLevel(Level.ALL);
+            consoleHandler.setLevel(Level.INFO);
+            fileHandler.setLevel(Level.INFO);
+            LOGGER.setLevel(Level.INFO);
 
             LOGGER.config("Configuration done.");
 
