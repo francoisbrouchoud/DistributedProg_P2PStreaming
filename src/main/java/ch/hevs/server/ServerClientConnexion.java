@@ -3,6 +3,7 @@ package ch.hevs.server;
 import ch.hevs.common.ActionClientServer;
 import ch.hevs.common.ClientInfo;
 import ch.hevs.common.FileInfo;
+import ch.hevs.common.LogHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,17 +13,20 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 public class ServerClientConnexion implements Runnable {
     private Socket clientSocketOnServer;
     private String clientId;
     private ArrayBlockingQueue<ClientInfo> clients;
+    private Logger LOGGER;
 
     //Constructor
-    public ServerClientConnexion(Socket clientSocketOnServer, ArrayBlockingQueue<ClientInfo> clients) {
+    public ServerClientConnexion(Socket clientSocketOnServer, ArrayBlockingQueue<ClientInfo> clients, Logger logger) {
         this.clientSocketOnServer = clientSocketOnServer;
         this.clientId = clientSocketOnServer.getInetAddress() + ":" + clientSocketOnServer.getPort();
         this.clients = clients;
+        this.LOGGER = logger;
     }
 
     @Override
@@ -40,19 +44,22 @@ public class ServerClientConnexion implements Runnable {
             //Création de fonction par cas
             switch (order) {
                 case GET_FILES_LIST:
+                    this.LOGGER.info("Get files list");
                     getFilesList(pOut);
                     break;
                 case SHARE_FILE_LIST:
+                    this.LOGGER.info("Share files list");
                     shareFilesList(buffIn);
                     break;
                 case DECONNEXION:
+                    this.LOGGER.info("Deconnexion");
                     deleteClient(buffIn);
                     break;
             }
             clientSocketOnServer.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.LogError(e,this.LOGGER);
         }
     }
 
@@ -68,7 +75,7 @@ public class ServerClientConnexion implements Runnable {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.LogError(e,this.LOGGER);
         }
     }
 
@@ -84,9 +91,9 @@ public class ServerClientConnexion implements Runnable {
             clients.put(new ClientInfo(clientId, ip, port, files));
             System.out.println(clientId + " " + ip + " " + port);
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.LogError(e,this.LOGGER);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LogHelper.LogError(e,this.LOGGER);
         }
 
     }
@@ -96,10 +103,9 @@ public class ServerClientConnexion implements Runnable {
         for (ClientInfo client : clients) {
             for (String file : client.getFiles()) {
                 files.add(new FileInfo(client.getClientAdresse(), client.getClientPort(), file));
-                //System.out.println(client.getClientAdresse()+":"+client.getClientPort()+" "+ file);
+                this.LOGGER.info(client.getClientAdresse()+":"+client.getClientPort()+" "+ file);
             }
         }
-        //System.out.println(files.size());
         pOut.println(files.size());
         for (FileInfo file : files) {
             pOut.println(file.getIp());

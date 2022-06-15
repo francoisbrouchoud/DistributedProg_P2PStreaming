@@ -63,7 +63,7 @@ public class ServerConnexion extends ServerBase {
 
     @Override
     public void acceptClient(Socket socket) {
-        Thread t = new Thread(new ServerClientConnexion(socket, clients));
+        Thread t = new Thread(new ServerClientConnexion(socket, clients, LOGGER));
         LOGGER.info("New Client connected");
         t.start();
     }
