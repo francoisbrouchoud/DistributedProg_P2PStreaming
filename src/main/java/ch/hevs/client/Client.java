@@ -247,7 +247,7 @@ public class Client {
                     System.out.println("\u23F8");
                 }
                 else if (playAction == 'q') {
-                    player.pause();
+                    clientSocket.close();
                     System.out.println("\u23F9 Arrêt de la lecture de " + file.getFileName());
                 }
                 else{
