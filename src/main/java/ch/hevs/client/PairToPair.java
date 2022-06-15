@@ -28,9 +28,6 @@ public class PairToPair implements Runnable{
             String filePath = buffIn.readLine();
             ActionP2P order = ActionP2P.values()[orderNumber];
 
-
-            //TODO switch case des commandes possible
-            // Création de fonction par cas
             switch (order){
                 case LISTEN_AUDIO_FILE:
                     stream(filePath);

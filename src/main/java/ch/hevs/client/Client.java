@@ -169,7 +169,7 @@ public class Client {
                 System.out.println(file.getFileId() + ": " + file.getFileName() + " on " + file.getIp() + ":" + file.getPort());
             }
             clientSocket.close();
-            // TODO Ajoute option ecouter un fichier ? faire fonction
+
             int idToListen = -1;
             boolean stop = false;
 
