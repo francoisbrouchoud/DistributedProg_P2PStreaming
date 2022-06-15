@@ -11,7 +11,7 @@ public class SimpleAudioPlayer {
     Clip clip;
 
     // current status of clip
-    String status;
+    String status = "play";
 
     AudioInputStream audioInputStream;
     static String filePath;
@@ -38,8 +38,8 @@ public class SimpleAudioPlayer {
     {
         //start the clip
         clip.start();
-
         status = "play";
+        clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
     // Method to pause the audio
@@ -47,7 +47,7 @@ public class SimpleAudioPlayer {
     {
         if (status.equals("paused"))
         {
-            System.out.println("audio is already paused");
+            System.out.println("Le morceau est déjà en pause.");
             return;
         }
         this.currentFrame =

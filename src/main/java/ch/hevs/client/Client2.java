@@ -210,7 +210,7 @@ public class Client2 {
     }
 
     private static void listen(FileInfo file) {
-        System.out.println("Joue " + file.getFileName());
+
         try{
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
             BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -219,15 +219,39 @@ public class Client2 {
             pOut.println(ActionP2P.GET_AUDIO_FILE.ordinal());
 
             pOut.println(file.getFileName());
-            int totalsize = Integer.parseInt(Buffin.readLine());
-            String filename = Buffin.readLine();
+           // int totalsize = Integer.parseInt(Buffin.readLine());
+           // String filename = Buffin.readLine();
 
-            byte[] mybytearray = new byte[totalsize];
+           // byte[] mybytearray = new byte[totalsize];
             InputStream is = new BufferedInputStream(clientSocket.getInputStream());
 
             SimpleAudioPlayer player = new SimpleAudioPlayer(is);
+            System.out.println("\u266B\u266B\u266B Lecture de " + file.getFileName() + " depuis "+ clientSocket.getRemoteSocketAddress() + " \u266B\u266B\u266B");
+            System.out.println("Commandes : l = \u25B6 | p = \u23F8 | q = \u23F9 ");
 
-            System.out.println("Connexion close" + clientSocket.getRemoteSocketAddress());
+
+            Scanner sc = new Scanner(System.in);
+            char playAction = '-';
+            do{
+                playAction = sc.next().charAt(0);
+                if(playAction == 'l'){
+                    player.play();
+                    System.out.println("\u25B6");
+                }
+
+                if(playAction == 'p'){
+                    player.pause();
+                    System.out.println("\u23F8");
+                }
+
+                if(playAction == 'q'){
+                    player.pause();
+                    System.out.print("\u23F9 Arret de la lecture de " + file.getFileName());
+                }
+
+            } while (playAction != 'q');
+
+            System.out.println("Arret de la lecture" + clientSocket.getRemoteSocketAddress());
 
         } catch (UnknownHostException e) {
             e.printStackTrace();

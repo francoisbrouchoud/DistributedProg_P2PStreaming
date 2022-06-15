@@ -54,10 +54,10 @@ public class PairToPair implements Runnable{
         long myFileSize = 0;
         try {
             myFileSize = Files.size(Paths.get(filePath));
-            PrintWriter Pout2 = null;
-            Pout2 = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
-            Pout2.println(myFileSize);
-            Pout2.println(fileName);
+            //PrintWriter Pout2 = null;
+           // Pout2 = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
+           // Pout2.println(myFileSize);
+           // Pout2.println(fileName);
 
             byte[] mybytearray = new byte[(int)myFileSize];
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
