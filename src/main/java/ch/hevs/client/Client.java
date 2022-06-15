@@ -52,6 +52,7 @@ public class Client {
         Scanner sc = new Scanner(System.in);
 
         try {
+            System.out.println("**********************************************");
             serverAddress = ipInput(sc);
             System.out.println("\u2714 Adresse du serveur : " + serverAddress.getHostAddress() + " saisie.");
             serverPort = portInput(sc);
@@ -64,7 +65,7 @@ public class Client {
         // switch case en fonction des choix
         boolean exit = false;
         do {
-            System.out.println("Vous pouvez envoyer des fichiers à partager(p) ou demander la liste des fichier disponnible (d)");
+            System.out.print("\u2B83 Vous pouvez envoyer des fichiers à partager (p) ou demander la liste des fichiers disponibles (d) : ");
             String action = sc.next();
 
             switch (action) {
@@ -88,14 +89,14 @@ public class Client {
         Pattern pattern = Pattern.compile(IP_REGEX);
         String ip = "";
         boolean checkIp = false;
+        System.out.print("\u270E Saisir l'adresse IP du serveur : ");
         do {
-            System.out.print("\u270E Saisir l'adresse IP du serveur : ");
             ip = sc.next();
             Matcher matcher = pattern.matcher(ip);
             if (matcher.matches() == true) {
                 checkIp = true;
             } else {
-                System.err.println("\u2717 L'IP \"" + ip + "\" ne correspond pas au format IPV4.");
+                System.err.print("\u2717 L'IP \"" + ip + "\" ne correspond pas au format IPV4. Saisir à nouveau : ");
                 checkIp = false;
             }
         } while (!checkIp);
@@ -106,13 +107,13 @@ public class Client {
     private static int portInput(Scanner sc) {
         boolean checkPort;
         int port = -1;
+        System.out.print("\u270E Saisir le port du serveur (1024-65535) : ");
         do {
-            System.out.print("\u270E Saisir le port du serveur (1024-65535) : ");
             port = sc.nextInt();
             if (port >= 1024 && port <= 65535) {
                 checkPort = true;
             } else {
-                System.err.println("\u2717 Le port\"" + port+"\" n'est pas valide. ");
+                System.err.print("\u2717 Le port " + port + " n'est pas valide. Saisir à nouveau dans la plage (1024-65535) : ");
                 checkPort = false;
             }
         } while (!checkPort);
@@ -139,7 +140,7 @@ public class Client {
         String file = "";
         do {
             if (!Objects.equals(file, "")) files.add(file);
-            System.out.println("ecriver le chemin du fichier si il y en a plus mettre -1: ");
+            System.out.println("\u270E Ecriver le chemin du fichier. Pour arrêter la saisie, entrer  -1 : ");
             file = console.next();
         } while (!Objects.equals(file, "-1"));
 
@@ -148,7 +149,7 @@ public class Client {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionClientServer.SHARE_FILE_LIST.ordinal());
             shareFilesList(pOut, files);
-            System.out.println("Vos fichiers ont été partagé");
+            System.out.println("\u2B06 Vos fichiers ont été partagés.");
             clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -170,36 +171,44 @@ public class Client {
             clientSocket.close();
             // TODO Ajoute option ecouter un fichier ? faire fonction
             int idToListen = -1;
-            boolean found = false;
+            boolean stop = false;
 
-            while (!found && files.size() > 0) {
-                System.out.println("Saisir le n° du morceau : ");
+            while (!stop && files.size() > 0) {
+                System.out.print("\u270E Saisir le n° du morceau : ");
                 idToListen = console.nextInt();
-
 
                 for (FileInfo file : files) {
                     if (file.getFileId() == idToListen) {
-                        System.out.println("Morceau choisi : " + file.getFileName());
-                        int actionPlay;
-                        Scanner sc = new Scanner(System.in);
+                        System.out.println("\u266a Morceau choisi : " + file.getFileName());
+                        char actionPlay = '-';
+                        System.out.print("\u25B6 Jouer (j) ou \u2B07 Télécharger (t) : ");
                         do {
-                            System.out.println("Télécharger (1) ou Jouer (2)");
-                            actionPlay = sc.nextInt();
-                            if (actionPlay == 1) download(file);
-                            if (actionPlay == 2) listen(file);
-                        } while (actionPlay != 1 && actionPlay != 2);
-                        found = true;
+                            actionPlay = console.next().charAt(0);
+                            if (actionPlay == 'j')
+                                listen(file);
+                            else if (actionPlay == 't')
+                                download(file);
+                            else
+                                System.err.print("Saisir j pour jouer \u25B6 ou t pour télécharger \u2B07 : ");
+                        } while (actionPlay != 'j' && actionPlay != 't');
+                        stop = true;
                     }
                 }
-                if (!found) System.out.println("Morceau non trouvé");
-                else {
-                    System.out.println("Voulez-vous écouter un autre morceau (1/0)");
-                    Scanner sc = new Scanner(System.in);
-                    int commandMorceau = sc.nextInt();
 
-                    if (commandMorceau == 1) {
-                        found = false;
-                    }
+                if (!stop)
+                    System.err.println("\u274c Morceau non trouvé.");
+                else {
+                    System.out.print("\u2B6E Voulez-vous sélectionner un autre morceau (o/n) : ");
+                    char command = '-';
+                    do {
+                        command = console.next().charAt(0);
+                        if (command == 'o')
+                            stop = false;
+                        else if (command == 'n')
+                            stop = true;
+                        else
+                            System.err.println("\u274c Saisie non reconnue (o/n) : ");
+                    } while (command != 'o' && command != 'n');
                 }
             }
 
@@ -211,47 +220,42 @@ public class Client {
 
     private static void listen(FileInfo file) {
 
-        try{
+        try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
-            BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
-            pOut.println(ActionP2P.GET_AUDIO_FILE.ordinal());
+            pOut.println(ActionP2P.LISTEN_AUDIO_FILE.ordinal());
 
             pOut.println(file.getFileName());
-           // int totalsize = Integer.parseInt(Buffin.readLine());
-           // String filename = Buffin.readLine();
 
-           // byte[] mybytearray = new byte[totalsize];
             InputStream is = new BufferedInputStream(clientSocket.getInputStream());
 
             SimpleAudioPlayer player = new SimpleAudioPlayer(is);
-            System.out.println("\u266B\u266B\u266B Lecture de " + file.getFileName() + " depuis "+ clientSocket.getRemoteSocketAddress() + " \u266B\u266B\u266B");
+            System.out.println("\u266B\u266B\u266B Lecture de " + file.getFileName() + " depuis " + clientSocket.getRemoteSocketAddress() + " \u266B\u266B\u266B");
             System.out.println("Commandes : l = \u25B6 | p = \u23F8 | q = \u23F9 ");
-
 
             Scanner sc = new Scanner(System.in);
             char playAction = '-';
-            do{
+            do {
                 playAction = sc.next().charAt(0);
-                if(playAction == 'l'){
+                if (playAction == 'l') {
                     player.play();
                     System.out.println("\u25B6");
                 }
-
-                if(playAction == 'p'){
+                else if (playAction == 'p') {
                     player.pause();
                     System.out.println("\u23F8");
                 }
-
-                if(playAction == 'q'){
+                else if (playAction == 'q') {
                     player.pause();
-                    System.out.print("\u23F9 Arret de la lecture de " + file.getFileName());
+                    System.out.println("\u23F9 Arrêt de la lecture de " + file.getFileName());
+                }
+                else{
+                    System.err.print("Les commandes valides sont : l = \u25B6 | p = \u23F8 | q = \u23F9 ");
                 }
 
             } while (playAction != 'q');
 
-            System.out.println("Arret de la lecture" + clientSocket.getRemoteSocketAddress());
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -265,7 +269,6 @@ public class Client {
     }
 
     private static void download(FileInfo file) {
-        System.out.println("Télécharge " + file.getFileName());
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
             BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -288,24 +291,16 @@ public class Client {
                 int byteRead = is.read(mybytearray, 0, mybytearray.length);
                 byteReadTot += byteRead;
                 bos.write(mybytearray, 0, byteRead);
-
             }
 
             bos.close();
             clientSocket.close();
+            System.out.println("\u2B07 Téléchargement terminé de " + file.getFileName());
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
-
-    /*
-    private static void listen(int music){
-        Socket client = new Socket(IPserverP2P, portServerP2P);
-        //Pause + STOp
-    }
-
-     */
 
     private static void disconnect(PrintWriter pOut) {
         pOut.println(server.getServerAddress());

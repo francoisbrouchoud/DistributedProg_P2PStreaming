@@ -1,6 +1,5 @@
 package ch.hevs.client;
 
-import ch.hevs.common.ActionClientServer;
 import ch.hevs.common.ActionP2P;
 
 import java.io.*;
@@ -33,11 +32,11 @@ public class PairToPair implements Runnable{
             //TODO switch case des commandes possible
             // Création de fonction par cas
             switch (order){
+                case LISTEN_AUDIO_FILE:
+                    stream(filePath);
+                    break;
                 case DOWNLOAD_AUDIO_FILE:
                     download(filePath);
-                    break;
-                case GET_AUDIO_FILE:
-                    stream(filePath);
                     break;
             }
             clientSocketOnServer.close();
