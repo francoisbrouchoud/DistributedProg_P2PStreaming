@@ -30,21 +30,15 @@ public class ServerConnexion extends ServerBase {
         Formatter simpleFormatter = null;
 
         //TODO implementer la creation du fichier
-        final String LOG_FOLDER = "logs";
-        String pattern = "yyyy-MM";
+        String pattern = "yyyyMM";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String date = simpleDateFormat.format(new Date());
-        File logFile = new File(LOG_FOLDER + "\\" + date +".log");
-        if (!logFile.exists()) {
-            logFile.mkdir();
-        }
-
 
         try{
             //Creating consoleHandler and fileHandler
             consoleHandler = new ConsoleHandler();
             // chez moi C:\Users\celin\AppData\Local\Temp
-            fileHandler  = new FileHandler("%t/serverJavaSocket.log", true);
+            fileHandler  = new FileHandler("%t/serverJavaSocket" + date + ".log", true);
             // Creating SimpleFormatter
             simpleFormatter = new SimpleFormatter();
             fileHandler.setFormatter(simpleFormatter);
