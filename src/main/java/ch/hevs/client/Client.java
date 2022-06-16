@@ -62,7 +62,7 @@ public class Client {
         // switch case en fonction des choix
         boolean exit = false;
         do {
-            System.out.print("\u2B83 Vous pouvez saisir : (p) pour inscrire  des fichiers à partager | (d) pour demander la liste des fichiers disponibles | (q) pour quitter : ");
+            System.out.print("\u2B83 Vous pouvez saisir : (p) pour enregistrer les fichiers à partager | (d) pour demander la liste des fichiers disponibles | (q) pour quitter : ");
             String action = sc.next();
 
             switch (action) {
@@ -85,7 +85,7 @@ public class Client {
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
-            pOut.println(ActionClientServer.DECONNEXION.ordinal());
+            pOut.println(ActionClientServer.LOGOUT.ordinal());
             disconnect(pOut);
             clientSocket.close();
         } catch (IOException e) {
@@ -98,49 +98,33 @@ public class Client {
     //TODO gerer les erreurs si le server n'existe pas ConnectException
     private static void share(Scanner console) {
         ArrayList<String> files = new ArrayList<>();
-        String file = "";
 
         File localDir = new File(FILES_TO_SHARE_FOLDER);
         File[] localFiles = localDir.listFiles();
         int pos = 0;
-        for (File fileElt : localFiles){
+        for (File fileElt : localFiles) {
             String fileName = fileElt.getName();
-            if(fileElt.isFile() && fileName.substring(Math.max(0, fileName.length()-4)).equals(".wav")){
+            if (fileElt.isFile() && fileName.substring(Math.max(0, fileName.length() - 4)).equals(".wav")) {
                 pos++;
-                System.out.println(pos + ") " +  fileName);
+                System.out.println(pos + ") " + fileName);
             }
         }
-        if(pos == 0){
+        if (pos == 0) {
             System.err.println("\u274c Le dossier shareFiles ne contient aucun fichier lisibles. Ajouter des fichiers wav et réessayer. ");
-        }
-        else {
+        } else {
             char fileInput;
             do {
                 System.out.print("\u270E Ajouter le n° du fichier à partager ou q pour quitter : ");
                 fileInput = console.next().charAt(0);
-                if(Character.getNumericValue(fileInput) > 0 && Character.getNumericValue(fileInput) <= pos){
-                    files.add(localFiles[Character.getNumericValue(fileInput-1)].getName());
-                }
-                else if (fileInput == 'q'){
+                if (Character.getNumericValue(fileInput) > 0 && Character.getNumericValue(fileInput) <= pos)
+                    files.add(localFiles[Character.getNumericValue(fileInput - 1)].getName());
+                else if (fileInput == 'q')
                     System.out.print("\u2714 Saisie terminée. ");
-                }
-                else {
+                else
                     System.err.print("\u274c Saisie non reconnue. Réessayer : ");
-                }
             } while (fileInput != 'q');
         }
 
-        /*
-        do {
-            if (!Objects.equals(file, ""))
-                files.add(file);
-
-
-
-            System.out.println("\u270E Ecriver le chemin du fichier. Pour arrêter la saisie, entrer  -1 : ");
-            file = console.next();
-        } while (!Objects.equals(file, "-1"));
-        */
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -163,7 +147,7 @@ public class Client {
             ArrayList<FileInfo> files = getFilesList(buffIn);
 
             for (FileInfo file : files) {
-                System.out.println(file.getFileId() + ": " + file.getFileName() + " on " + file.getIp() + ":" + file.getPort());
+                System.out.println(file.getFileId() + ": " + file.getFileName() + " sur " + file.getIp() + ":" + file.getPort());
             }
             clientSocket.close();
 
@@ -185,11 +169,11 @@ public class Client {
                                 listen(file);
                             else if (actionPlay == 't')
                                 download(file);
-                            else if(actionPlay == 'q')
+                            else if (actionPlay == 'q')
                                 System.out.println("\u293A sortie");
                             else
                                 System.err.print("Saisir j pour jouer \u25B6 | t pour télécharger \u2B07 | q pour quitter \u293A ");
-                        } while (actionPlay != 'j' && actionPlay != 't' && actionPlay !='q');
+                        } while (actionPlay != 'j' && actionPlay != 't' && actionPlay != 'q');
                         found = true;
                     }
                 }
@@ -237,18 +221,15 @@ public class Client {
                 if (playAction == 'l') {
                     player.play();
                     System.out.println("\u25B6");
-                }
-                else if (playAction == 'p') {
+                } else if (playAction == 'p') {
                     player.pause();
                     System.out.println("\u23F8");
-                }
-                else if (playAction == 'q') {
+                } else if (playAction == 'q') {
                     clientSocket.close();
                     //TODO voir pour arreter la musique différement
                     player.stop();
                     System.out.println("\u23F9 Arrêt de la lecture de " + file.getFileName());
-                }
-                else{
+                } else {
                     System.err.print("Les commandes valides sont : l = \u25B6 | p = \u23F8 | q = \u23F9 ");
                 }
             } while (playAction != 'q');

@@ -51,7 +51,7 @@ public class ServerClientConnexion implements Runnable {
                     this.LOGGER.info("Share files list");
                     shareFilesList(buffIn);
                     break;
-                case DECONNEXION:
+                case LOGOUT:
                     this.LOGGER.info("Deconnexion");
                     deleteClient(buffIn);
                     break;
