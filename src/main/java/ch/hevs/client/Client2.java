@@ -48,7 +48,12 @@ public class Client2 {
         t.start();
 
         Scanner sc = new Scanner(System.in);
+        dataInput(sc);
 
+
+    }
+
+    private static void dataInput(Scanner sc) {
         try {
             System.out.println("**********************************************");
             serverAddress = AddressHelper.ipInput();
@@ -114,12 +119,12 @@ public class Client2 {
         } else {
             char fileInput;
             do {
-                System.out.print("\u270E Ajouter le n° du fichier à partager ou q pour quitter : ");
+                System.out.print("\u270E Ajouter le n° du fichier à partager ou (q) pour quitter : ");
                 fileInput = console.next().charAt(0);
                 if (Character.getNumericValue(fileInput) > 0 && Character.getNumericValue(fileInput) <= pos)
                     files.add(localFiles[Character.getNumericValue(fileInput - 1)].getName());
                 else if (fileInput == 'q')
-                    System.out.print("\u2714 Saisie terminée. ");
+                    System.out.print("\u2714 Saisie terminée. Contact du serveur en cours... ");
                 else
                     System.err.print("\u274c Saisie non reconnue. Réessayer : ");
             } while (fileInput != 'q');
@@ -133,7 +138,8 @@ public class Client2 {
             System.out.println("\u2B06 Vos fichiers ont été partagés.");
             clientSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur de connexion au serveur : " + e.getMessage());
+            dataInput(console);
         }
     }
 
@@ -162,7 +168,7 @@ public class Client2 {
                     if (file.getFileId() == idToListen) {
                         System.out.println("\u266a Morceau choisi : " + file.getFileName());
                         char actionPlay = '-';
-                        System.out.print("\u25B6 Jouer (j) | \u2B07 Télécharger (t) | \u293A quitter (q) : ");
+                        System.out.print("\u25B6 Jouer (j) | \u2B07 Télécharger (t) | \u293A Quitter (q) : ");
                         do {
                             actionPlay = console.next().charAt(0);
                             if (actionPlay == 'j')
@@ -172,7 +178,7 @@ public class Client2 {
                             else if (actionPlay == 'q')
                                 System.out.println("\u293A sortie");
                             else
-                                System.err.print("Saisir j pour jouer \u25B6 | t pour télécharger \u2B07 | q pour quitter \u293A ");
+                                System.err.print("Saisir (j) pour jouer \u25B6 | (t) pour télécharger \u2B07 | (q) pour quitter \u293A ");
                         } while (actionPlay != 'j' && actionPlay != 't' && actionPlay != 'q');
                         found = true;
                     }
@@ -194,12 +200,12 @@ public class Client2 {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur de connexion au serveur : " + e.getMessage());
+            dataInput(console);
         }
     }
 
     private static void listen(FileInfo file) {
-
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
 
@@ -234,13 +240,17 @@ public class Client2 {
                 }
             } while (playAction != 'q');
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            ask(new Scanner(System.in));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Problème d'accès au fichier : " + e.getMessage());
+            ask(new Scanner(System.in));
         } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
+            System.err.println("Problème de lecture du fichier audio : " + e.getMessage());
+            ask(new Scanner(System.in));
         } catch (LineUnavailableException e) {
-            e.printStackTrace();
+            System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            ask(new Scanner(System.in));
         }
     }
 
@@ -273,7 +283,11 @@ public class Client2 {
             clientSocket.close();
             System.out.println("\u2B07 Téléchargement terminé de " + file.getFileName());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            ask(new Scanner(System.in));
+        } catch (NumberFormatException e){
+            System.err.println("Problème d'accès au fichier : " + e.getMessage());
+            ask(new Scanner(System.in));
         }
 
     }
