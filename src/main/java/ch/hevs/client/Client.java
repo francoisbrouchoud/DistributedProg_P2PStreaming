@@ -4,19 +4,16 @@ import ch.hevs.common.ActionClientServer;
 import ch.hevs.common.ActionP2P;
 import ch.hevs.common.FileInfo;
 import ch.hevs.common.SimpleAudioPlayer;
+import ch.hevs.common.AddressHelper;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /***
  * Role:
@@ -54,13 +51,12 @@ public class Client {
 
         try {
             System.out.println("**********************************************");
-            serverAddress = ipInput(sc);
+            serverAddress = AddressHelper.ipInput();
             System.out.println("\u2714 Adresse du serveur : " + serverAddress.getHostAddress() + " saisie.");
-            serverPort = portInput(sc);
+            serverPort = AddressHelper.portInput();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
 
         // Afficher un menu dans la console
         // switch case en fonction des choix
@@ -79,47 +75,11 @@ public class Client {
                 case "q":
                     exit = true;
                     break;
-
             }
         } while (!exit);
         exit();
     }
 
-    private static InetAddress ipInput(Scanner sc) throws UnknownHostException {
-        String IP_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$";
-        Pattern pattern = Pattern.compile(IP_REGEX);
-        String ip = "";
-        boolean checkIp = false;
-        System.out.print("\u270E Saisir l'adresse IP du serveur : ");
-        do {
-            ip = sc.next();
-            Matcher matcher = pattern.matcher(ip);
-            if (matcher.matches() == true) {
-                checkIp = true;
-            } else {
-                System.err.print("\u2717 L'IP \"" + ip + "\" ne correspond pas au format IPV4. Saisir à nouveau : ");
-                checkIp = false;
-            }
-        } while (!checkIp);
-
-        return InetAddress.getByName(ip);
-    }
-
-    private static int portInput(Scanner sc) {
-        boolean checkPort;
-        int port = -1;
-        System.out.print("\u270E Saisir le port du serveur (1024-65535) : ");
-        do {
-            port = sc.nextInt();
-            if (port >= 1024 && port <= 65535) {
-                checkPort = true;
-            } else {
-                System.err.print("\u2717 Le port " + port + " n'est pas valide. Saisir à nouveau dans la plage (1024-65535) : ");
-                checkPort = false;
-            }
-        } while (!checkPort);
-        return port;
-    }
 
     private static void exit() {
         try {
@@ -234,8 +194,7 @@ public class Client {
                     }
                 }
 
-                if (!found)
-                    System.err.println("\u274c Morceau non trouvé.");
+                if (!found) System.err.println("\u274c Morceau non trouvé.");
 
                 System.out.print("\u2B6E Voulez-vous sélectionner un autre morceau (o/n) : ");
                 char command = '-';
@@ -248,9 +207,7 @@ public class Client {
                     else
                         System.err.println("\u274c Saisie non reconnue (o/n) : ");
                 } while (command != 'o' && command != 'n');
-
             }
-
 
         } catch (IOException e) {
             e.printStackTrace();

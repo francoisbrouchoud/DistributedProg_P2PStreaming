@@ -32,7 +32,7 @@ public abstract class ServerBase implements Runnable {
                     while (localAddress.hasMoreElements()) {
                         InetAddress ia = localAddress.nextElement();
                         if (!ia.isLinkLocalAddress() && !ia.isLoopbackAddress() && ia instanceof Inet4Address) {
-                            System.out.println(connexionNumber+"] Interface : " + nix.getName() + " \u2192 IP :  " + ia.getHostAddress());
+                            System.out.println(connexionNumber + "] Interface : " + nix.getName() + " \u2192 IP :  " + ia.getHostAddress());
                             inetAddresses.add(ia);
                             connexionNumber++;
                         }
@@ -89,29 +89,12 @@ public abstract class ServerBase implements Runnable {
             choice = sc.next().charAt(0);
             if (choice == 'o') {
                 serverPort = 0;
-            }
-            else if (choice == 'n') {
-                serverPort = choosePort(sc);
-            }
-            else {
+            } else if (choice == 'n') {
+                serverPort = AddressHelper.portInput();
+            } else {
                 System.err.println("\u2717 Veuillez saisir (o/n) : ");
             }
         } while (choice != 'o' && choice != 'n');
-        return serverPort;
-    }
-
-    private int choosePort(Scanner sc) {
-        boolean checkPort;
-        System.out.print("\u270E Saisir le port voulu (1024-65535) : ");
-        do {
-            serverPort = sc.nextInt();
-            if (serverPort >= 1024 && serverPort <= 65535) {
-                checkPort = true;
-            } else {
-                System.err.print("\u2717 Le port " + serverPort + " n'est pas valide. Saisir à nouveau dans la plage (1024-65535) : ");
-                checkPort = false;
-            }
-        } while (!checkPort);
         return serverPort;
     }
 
