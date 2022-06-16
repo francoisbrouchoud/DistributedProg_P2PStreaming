@@ -139,12 +139,49 @@ public class Client {
     private static void share(Scanner console) {
         ArrayList<String> files = new ArrayList<>();
         String file = "";
+
+        File localDir = new File(FILES_TO_SHARE_FOLDER);
+        File[] localFiles = localDir.listFiles();
+        int pos = 0;
+        for (File fileElt : localFiles){
+
+            // && file.getName().substring(file.length()-3) == "wav"
+            if(fileElt.isFile() ){
+                pos++;
+                System.out.println(pos + ") " +  fileElt.getName());
+            }
+        }
+        if(pos == 0){
+            System.err.println("\u274c Le dossier shareFiles ne contient aucun fichier lisibles. Ajouter des fichiers wav et réessayer. ");
+        }
+        else {
+            char fileInput;
+            do {
+                System.out.print("\u270E Ajouter le n° du fichier à partager ou q pour quitter : ");
+                fileInput = console.next().charAt(0);
+                if(Character.getNumericValue(fileInput) > 0 && Character.getNumericValue(fileInput) <= pos){
+                    files.add(localFiles[Character.getNumericValue(fileInput-1)].getName());
+                }
+                else if (fileInput == 'q'){
+                    System.out.print("\u2714 Saisie terminée. ");
+                }
+                else {
+                    System.err.print("\u274c Saisie non reconnue. Réessayer : ");
+                }
+            } while (fileInput != 'q');
+        }
+
+        /*
         do {
-            if (!Objects.equals(file, "")) files.add(file);
+            if (!Objects.equals(file, ""))
+                files.add(file);
+
+
+
             System.out.println("\u270E Ecriver le chemin du fichier. Pour arrêter la saisie, entrer  -1 : ");
             file = console.next();
         } while (!Objects.equals(file, "-1"));
-
+        */
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
