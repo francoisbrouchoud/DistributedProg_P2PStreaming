@@ -52,7 +52,7 @@ public class ServerClientConnexion implements Runnable {
                     shareFilesList(buffIn);
                     break;
                 case LOGOUT:
-                    this.LOGGER.info("Deconnexion");
+                    this.LOGGER.info("Logout");
                     deleteClient(buffIn);
                     break;
             }

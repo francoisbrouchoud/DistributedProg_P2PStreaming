@@ -1,10 +1,6 @@
 package ch.hevs.client;
 
-import ch.hevs.common.ActionClientServer;
-import ch.hevs.common.ActionP2P;
-import ch.hevs.common.FileInfo;
-import ch.hevs.common.SimpleAudioPlayer;
-import ch.hevs.common.AddressHelper;
+import ch.hevs.common.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -17,11 +13,11 @@ import java.util.Scanner;
 
 /***
  * Role:
- * - Demander au server une liste de fichier dispo
- * - Envoyer la liste de fichier dispo sur notre ordi
+ * - Demander au serveur une liste de fichiers disponibles
+ * - Envoyer la liste des fichiers disponibles depuis le dossier sharedFiles
  * - Récupérer un fichier
- *      - Ecouter le fichier Si music ???
- *      - Download le fichier Si document ???
+ *      - Ecouter le fichier
+ *      - Télécharger le fichier
  */
 public class Client2 {
     static final String RECEPTION_FOLDER = "receivedFiles";
@@ -31,8 +27,6 @@ public class Client2 {
     public static int serverPort;
 
     public static void main(String[] args) {
-        // Création P2P server --> déplacer dans Serveur
-        // activer l'écoute de connexion
 
         File receptionFolder = new File(RECEPTION_FOLDER);
         if (!receptionFolder.exists()) {
@@ -49,8 +43,6 @@ public class Client2 {
 
         Scanner sc = new Scanner(System.in);
         dataInput(sc);
-
-
     }
 
     private static void dataInput(Scanner sc) {
@@ -85,7 +77,6 @@ public class Client2 {
         exit();
     }
 
-
     private static void exit() {
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
@@ -94,13 +85,13 @@ public class Client2 {
             disconnect(pOut);
             clientSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur de connexion au serveur : " + e.getMessage());
+            dataInput(new Scanner(System.in));
         }
         System.out.println("Merci d'avoir utilisé notre application !");
         System.exit(0);
     }
 
-    //TODO gerer les erreurs si le server n'existe pas ConnectException
     private static void share(Scanner console) {
         ArrayList<String> files = new ArrayList<>();
 
@@ -119,15 +110,15 @@ public class Client2 {
         } else {
             char fileInput;
             do {
-                System.out.print("\u270E Ajouter le n° du fichier à partager ou (q) pour quitter : ");
+                System.out.print("\u270E Ajouter le n° du fichier à partager. Saisir (t) pour terminer la saisie : ");
                 fileInput = console.next().charAt(0);
                 if (Character.getNumericValue(fileInput) > 0 && Character.getNumericValue(fileInput) <= pos)
                     files.add(localFiles[Character.getNumericValue(fileInput - 1)].getName());
-                else if (fileInput == 'q')
+                else if (fileInput == 't')
                     System.out.print("\u2714 Saisie terminée. Contact du serveur en cours... ");
                 else
                     System.err.print("\u274c Saisie non reconnue. Réessayer : ");
-            } while (fileInput != 'q');
+            } while (fileInput != 't');
         }
 
         try {
@@ -143,7 +134,6 @@ public class Client2 {
         }
     }
 
-    //TODO gerer les erreurs si le server n'existe pas ConnectException
     private static void ask(Scanner console) {
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
@@ -195,7 +185,7 @@ public class Client2 {
                     else if (command == 'n')
                         found = true;
                     else
-                        System.err.println("\u274c Saisie non reconnue (o/n) : ");
+                        System.err.println("\u274c Saisir (o) pour oui / (n) pour non : ");
                 } while (command != 'o' && command != 'n');
             }
 
@@ -289,7 +279,6 @@ public class Client2 {
             System.err.println("Problème d'accès au fichier : " + e.getMessage());
             ask(new Scanner(System.in));
         }
-
     }
 
     private static void disconnect(PrintWriter pOut) {
@@ -323,5 +312,4 @@ public class Client2 {
         }
         return null;
     }
-
 }

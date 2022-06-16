@@ -3,7 +3,7 @@ package ch.hevs.server;
 /***
  * Role:
  * - Etre à l'écoute des clients
- * - Stock une liste de fichiers avec ip et port de lieu
+ * - Stocke une liste de fichiers avec ip et port
  * - Dire l'ip et port pour retrouver un fichier
  * - Lister les fichiers dispo
  */

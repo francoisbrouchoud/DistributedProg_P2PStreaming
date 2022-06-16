@@ -20,10 +20,10 @@ public class PairToPair implements Runnable{
     @Override
     public void run() {
         try {
-            // création des reader et des writer
+            // Création des reader et des writer
             BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
             PrintWriter pOut = new PrintWriter(clientSocketOnServer.getOutputStream());
-            // écoute la commande
+            // Ecoute la commande
             int orderNumber = Integer.parseInt(buffIn.readLine());
             String filePath = buffIn.readLine();
             ActionP2P order = ActionP2P.values()[orderNumber];
@@ -50,10 +50,6 @@ public class PairToPair implements Runnable{
         long myFileSize = 0;
         try {
             myFileSize = Files.size(Paths.get(filePath));
-            //PrintWriter Pout2 = null;
-           // Pout2 = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
-           // Pout2.println(myFileSize);
-           // Pout2.println(fileName);
 
             byte[] mybytearray = new byte[(int)myFileSize];
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
@@ -70,9 +66,6 @@ public class PairToPair implements Runnable{
         }
 
     }
-
-
-
 
     private void download(String fileName){
         String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
@@ -97,6 +90,5 @@ public class PairToPair implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }
