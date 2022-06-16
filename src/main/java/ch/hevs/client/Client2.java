@@ -285,6 +285,8 @@ public class Client2 {
                     System.out.println("\u23F8");
                 }
                 else if (playAction == 'q') {
+                    clientSocket.close();
+                    //TODO voir pour arreter la musique différement
                     player.pause();
                     System.out.println("\u23F9 Arrêt de la lecture de " + file.getFileName());
                 }
