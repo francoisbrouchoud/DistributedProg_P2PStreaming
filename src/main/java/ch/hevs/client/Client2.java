@@ -129,7 +129,7 @@ public class Client2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Merci d'avoir utiliser notre application !");
+        System.out.println("Merci d'avoir utilisé notre application !");
         System.exit(0);
     }
 
@@ -142,11 +142,10 @@ public class Client2 {
         File[] localFiles = localDir.listFiles();
         int pos = 0;
         for (File fileElt : localFiles){
-
-            // && file.getName().substring(file.length()-3) == "wav"
-            if(fileElt.isFile() ){
+            String fileName = fileElt.getName();
+            if(fileElt.isFile() && fileName.substring(Math.max(0, fileName.length()-4)).equals(".wav")){
                 pos++;
-                System.out.println(pos + ") " +  fileElt.getName());
+                System.out.println(pos + ") " +  fileName);
             }
         }
         if(pos == 0){
@@ -293,10 +292,7 @@ public class Client2 {
                 else{
                     System.err.print("Les commandes valides sont : l = \u25B6 | p = \u23F8 | q = \u23F9 ");
                 }
-
             } while (playAction != 'q');
-
-
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
