@@ -56,6 +56,11 @@ public class SimpleAudioPlayer {
         status = "paused";
     }
 
+    public void stop()
+    {
+        clip.stop();
+    }
+
     // Method to reset audio stream
     public void resetAudioStream() throws UnsupportedAudioFileException, IOException,
             LineUnavailableException
