@@ -48,7 +48,12 @@ public class Client {
         t.start();
 
         Scanner sc = new Scanner(System.in);
+        dataInput(sc);
 
+
+    }
+
+    private static void dataInput(Scanner sc) {
         try {
             System.out.println("**********************************************");
             serverAddress = AddressHelper.ipInput();
@@ -199,7 +204,6 @@ public class Client {
     }
 
     private static void listen(FileInfo file) {
-
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
 
