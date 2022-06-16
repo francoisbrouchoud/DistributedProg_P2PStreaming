@@ -12,7 +12,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,7 +64,7 @@ public class Client2 {
         // switch case en fonction des choix
         boolean exit = false;
         do {
-            System.out.print("\u2B83 Vous pouvez envoyer des fichiers à partager (p) ou demander la liste des fichiers disponibles (d) : ");
+            System.out.print("\u2B83 Vous pouvez saisir : (p) pour inscrire  des fichiers à partager | (d) pour demander la liste des fichiers disponibles | (q) pour quitter : ");
             String action = sc.next();
 
             switch (action) {
@@ -75,7 +74,7 @@ public class Client2 {
                 case "d":
                     ask(sc);
                     break;
-                case "e":
+                case "q":
                     exit = true;
                     break;
 
@@ -130,7 +129,7 @@ public class Client2 {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Merci d'avoir utiliser notre application!");
+        System.out.println("Merci d'avoir utiliser notre application !");
         System.exit(0);
     }
 
@@ -169,10 +168,11 @@ public class Client2 {
                 System.out.println(file.getFileId() + ": " + file.getFileName() + " on " + file.getIp() + ":" + file.getPort());
             }
             clientSocket.close();
-            int idToListen = -1;
-            boolean stop = false;
 
-            while (!stop && files.size() > 0) {
+            int idToListen = -1;
+            boolean found = false;
+
+            while (!found && files.size() > 0) {
                 System.out.print("\u270E Saisir le n° du morceau : ");
                 idToListen = console.nextInt();
 
@@ -180,35 +180,37 @@ public class Client2 {
                     if (file.getFileId() == idToListen) {
                         System.out.println("\u266a Morceau choisi : " + file.getFileName());
                         char actionPlay = '-';
-                        System.out.print("\u25B6 Jouer (j) ou \u2B07 Télécharger (t) : ");
+                        System.out.print("\u25B6 Jouer (j) | \u2B07 Télécharger (t) | \u293A quitter (q) : ");
                         do {
                             actionPlay = console.next().charAt(0);
                             if (actionPlay == 'j')
                                 listen(file);
                             else if (actionPlay == 't')
                                 download(file);
+                            else if(actionPlay == 'q')
+                                System.out.println("\u293A sortie");
                             else
-                                System.err.print("Saisir j pour jouer \u25B6 ou t pour télécharger \u2B07 : ");
-                        } while (actionPlay != 'j' && actionPlay != 't');
-                        stop = true;
+                                System.err.print("Saisir j pour jouer \u25B6 | t pour télécharger \u2B07 | q pour quitter \u293A ");
+                        } while (actionPlay != 'j' && actionPlay != 't' && actionPlay !='q');
+                        found = true;
                     }
                 }
 
-                if (!stop)
+                if (!found)
                     System.err.println("\u274c Morceau non trouvé.");
-                else {
-                    System.out.print("\u2B6E Voulez-vous sélectionner un autre morceau (o/n) : ");
-                    char command = '-';
-                    do {
-                        command = console.next().charAt(0);
-                        if (command == 'o')
-                            stop = false;
-                        else if (command == 'n')
-                            stop = true;
-                        else
-                            System.err.println("\u274c Saisie non reconnue (o/n) : ");
-                    } while (command != 'o' && command != 'n');
-                }
+
+                System.out.print("\u2B6E Voulez-vous sélectionner un autre morceau (o/n) : ");
+                char command = '-';
+                do {
+                    command = console.next().charAt(0);
+                    if (command == 'o')
+                        found = false;
+                    else if (command == 'n')
+                        found = true;
+                    else
+                        System.err.println("\u274c Saisie non reconnue (o/n) : ");
+                } while (command != 'o' && command != 'n');
+
             }
 
 

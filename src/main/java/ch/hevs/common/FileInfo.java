@@ -16,7 +16,9 @@ public class FileInfo {
         this.port = port;
         this.fileName = fileName;
     }
-    public int getFileId(){ return fileId;}
+    public int getFileId(){
+        return fileId;
+    }
 
     public String getIp() {
         return ip;
