@@ -94,7 +94,8 @@ public class Client {
             disconnect(pOut);
             clientSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur de connexion au serveur : " + e.getMessage());
+            dataInput(new Scanner(System.in));
         }
         System.out.println("Merci d'avoir utilisé notre application !");
         System.exit(0);
