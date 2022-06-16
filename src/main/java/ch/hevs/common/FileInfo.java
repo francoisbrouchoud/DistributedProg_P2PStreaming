@@ -31,4 +31,8 @@ public class FileInfo {
     public String getFileName() {
         return fileName;
     }
+
+    public static void setUid(int uid) {
+        FileInfo.uid = uid;
+    }
 }

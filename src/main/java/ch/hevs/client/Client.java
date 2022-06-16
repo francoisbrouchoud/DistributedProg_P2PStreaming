@@ -355,6 +355,7 @@ public class Client {
     }
 
     private static ArrayList<FileInfo> getFilesList(BufferedReader buffIn) {
+        FileInfo.setUid(0);
         try {
             ArrayList<FileInfo> files = new ArrayList<>();
             int size = Integer.parseInt(buffIn.readLine());
