@@ -14,7 +14,6 @@ public class PeerToPeer implements Runnable {
     private int clientNumber;
     private Logger LOGGER;
 
-    //Constructor
     public PeerToPeer(Socket clientSocketOnServer, int clientNumber, Logger LOGGER) {
         this.clientSocketOnServer = clientSocketOnServer;
         this.clientNumber = clientNumber;
@@ -24,11 +23,10 @@ public class PeerToPeer implements Runnable {
     @Override
     public void run() {
         try {
-            // Création des reader et des writer
             BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
             PrintWriter pOut = new PrintWriter(clientSocketOnServer.getOutputStream());
 
-            // Ecoute la commande
+            //Ecoute de la commande
             int orderNumber = Integer.parseInt(buffIn.readLine());
 
             ActionP2P order = ActionP2P.values()[orderNumber];
@@ -50,6 +48,10 @@ public class PeerToPeer implements Runnable {
         }
     }
 
+    /**
+     * Streamn le fichier audio
+     * @param buffIn
+     */
     private void stream(BufferedReader buffIn) {
         try {
 
@@ -73,6 +75,10 @@ public class PeerToPeer implements Runnable {
 
     }
 
+    /**
+     * Envoi du fichier audio
+     * @param buffIn
+     */
     private void download(BufferedReader buffIn) {
         try {
             PrintWriter pout = new PrintWriter(clientSocketOnServer.getOutputStream(), true);

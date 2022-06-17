@@ -14,12 +14,7 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 /***
- * Role:
- * - Demander au serveur une liste de fichiers disponibles
- * - Envoyer la liste des fichiers disponibles depuis le dossier sharedFiles
- * - Récupérer un fichier
- *      - Ecouter le fichier
- *      - Télécharger le fichier
+ * Classe qui contient un main pour créer un exécutable client.
  */
 public class Client {
     static final String RECEPTION_FOLDER = "receivedFiles";
@@ -31,10 +26,10 @@ public class Client {
 
     public static void main(String[] args) {
 
-        // configuration du logger
+        // Configuration du logger
         LOGGER = LogHelper.loggerConfig(Client.class.getName());
 
-        // création des dossiers de partage et de récéption
+        // Création des dossiers de partage et de récéption
         File receptionFolder = new File(RECEPTION_FOLDER);
         if (!receptionFolder.exists()) {
             receptionFolder.mkdir();
@@ -44,20 +39,19 @@ public class Client {
             sharedFolder.mkdir();
         }
 
-        // création du server qui partage les fichiers
+        // Création du server qui partage les fichiers
         server = new ServerPeerToPeer(LOGGER);
         Thread t = new Thread(server);
         t.start();
 
-        // saisi addresse ip du server
+        // Saisie de l'addresse IP du serveur
         serverConfig();
 
-        // affichage du menu
+        // Affichage du menu
         menu();
     }
 
     private static void serverConfig() {
-
         System.out.println("**********************************************");
         serverAddress = AddressHelper.ipInput();
         System.out.println("\u2714 Adresse du serveur : " + serverAddress.getHostAddress() + " saisie.");
@@ -74,11 +68,11 @@ public class Client {
         }
     }
 
-
+    /**
+     * Afficher un menu dans la console
+     */
     private static void menu() {
         Scanner sc = new Scanner(System.in);
-        // Afficher un menu dans la console
-        // switch case en fonction des choix
         boolean exit = false;
         do {
             System.out.print("\u2B83 Vous pouvez saisir : (p) pour enregistrer les fichiers à partager | (d) pour demander la liste des fichiers disponibles | (q) pour quitter : ");
@@ -98,6 +92,9 @@ public class Client {
         exit();
     }
 
+    /***
+     * Sortie avec suppression des morceaux dans le registre du serveur
+     */
     private static void exit() {
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
@@ -113,6 +110,10 @@ public class Client {
         System.exit(0);
     }
 
+    /***
+     * Sélection des fichiers .wav à répertorier
+     * @return files
+     */
     private static ArrayList<String> selectFiles() {
         ArrayList<String> files = new ArrayList<>();
 
@@ -145,6 +146,9 @@ public class Client {
         return files;
     }
 
+    /***
+     * Partage des fichiers au serveur
+     */
     private static void share() {
         ArrayList<String> files = selectFiles();
 
@@ -161,6 +165,9 @@ public class Client {
         }
     }
 
+    /***
+     * Demande des fichiers disponibles au serveur
+     */
     private static void ask() {
         Scanner console = new Scanner(System.in);
         try {
@@ -197,6 +204,11 @@ public class Client {
         }
     }
 
+
+    /**
+     * Sélection d'un morceau
+     * @param files
+     */
     private static void selectMusic(ArrayList<FileInfo> files) {
         Scanner console = new Scanner(System.in);
         int idToListen = -1;
@@ -222,6 +234,10 @@ public class Client {
         }
     }
 
+    /**
+     * Leccteur de morceau
+     * @param file
+     */
     private static void actionMusic(FileInfo file) {
         Scanner console = new Scanner(System.in);
         char actionPlay = '-';
@@ -239,6 +255,11 @@ public class Client {
         } while (actionPlay != 'j' && actionPlay != 't' && actionPlay != 'q');
     }
 
+
+    /**
+     * Demande d'écoute du fichier audio
+     * @param file
+     */
     private static void listen(FileInfo file) {
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
@@ -252,6 +273,11 @@ public class Client {
         }
     }
 
+    /**
+     * Stream du fichier audio
+     * @param clientSocket
+     * @param file
+     */
     private static void stream(Socket clientSocket, FileInfo file) {
         try {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -296,6 +322,11 @@ public class Client {
         }
     }
 
+
+    /**
+     * Demande d'obtention du fichier
+     * @param file
+     */
     private static void getFile(FileInfo file) {
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
@@ -312,6 +343,11 @@ public class Client {
         }
     }
 
+    /**
+     * Téléchargement du fichier
+     * @param clientSocket
+     * @param file
+     */
     private static void download(Socket clientSocket, FileInfo file) {
         try {
             BufferedReader buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -354,6 +390,11 @@ public class Client {
         pOut.println(server.getServerPort());
     }
 
+    /**
+     * Partage de la liste des fichiers
+     * @param pOut
+     * @param files
+     */
     private static void shareFilesList(PrintWriter pOut, ArrayList<String> files) {
         pOut.println(server.getServerAddress().getHostAddress());
         pOut.println(server.getServerPort());
@@ -363,6 +404,12 @@ public class Client {
         }
     }
 
+
+    /**
+     * Obtention de la liste des fichiers
+     * @param buffIn
+     * @return
+     */
     private static ArrayList<FileInfo> getFilesList(BufferedReader buffIn) {
         try {
             ArrayList<FileInfo> files = new ArrayList<>();

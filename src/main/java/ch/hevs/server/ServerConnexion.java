@@ -15,7 +15,7 @@ public class ServerConnexion extends ServerBase {
     public ServerConnexion() {
         super();
         clients = new ArrayBlockingQueue<>(20);
-        // config logger
+        // Config logger
         LOGGER = LogHelper.loggerConfig(ServerConnexion.class.getName());
     }
 

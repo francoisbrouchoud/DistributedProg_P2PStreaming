@@ -6,6 +6,11 @@ import java.util.Date;
 import java.util.logging.*;
 
 public class LogHelper {
+    /**
+     * Formatte un excpetion pour logger son message et sa trace
+     * @param e
+     * @param logger
+     */
     public static void LogError(Exception e, Logger logger) {
         logger.severe(e.getMessage());
         for (StackTraceElement trace : e.getStackTrace()) {
@@ -14,6 +19,11 @@ public class LogHelper {
         }
     }
 
+    /**
+     * Création d'une configuration d'un nouveau logger
+     * @param className
+     * @return logger créé
+     */
     public static Logger loggerConfig(String className) {
         Logger logger = Logger.getLogger(className);
         Handler fileHandler = null;
@@ -24,17 +34,17 @@ public class LogHelper {
         String date = simpleDateFormat.format(new Date());
 
         try {
-            //Creating fileHandler
-            // chez moi C:\Users\celin\AppData\Local\Temp
+            // Creating fileHandler
+            // Dans C:\Users\[user]\AppData\Local\Temp
             fileHandler = new FileHandler("%t/JavaSocket" + className + date + ".log", true);
             // Creating SimpleFormatter
             simpleFormatter = new SimpleFormatter();
             fileHandler.setFormatter(simpleFormatter);
 
-            //Assigning handlers to LOGGER object
+            // Assigning handlers to LOGGER object
             logger.addHandler(fileHandler);
 
-            //Setting levels to handlers and LOGGER
+            // Setting levels to handlers and LOGGER
             fileHandler.setLevel(Level.INFO);
             logger.setLevel(Level.INFO);
 
