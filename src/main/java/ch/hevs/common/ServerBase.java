@@ -71,7 +71,7 @@ public abstract class ServerBase implements Runnable {
         int choiceIP = -1;
         System.out.print("\u270E Saisir la connexion voulue (1 - " + (connexionNumber - 1) + ") : ");
         do {
-            try{
+            try {
                 choiceIP = sc.nextInt();
                 if (choiceIP < connexionNumber && choiceIP > 0) {
                     checkChoice = true;
@@ -79,7 +79,7 @@ public abstract class ServerBase implements Runnable {
                     System.err.print("\u2717 L'interface saisie n'est pas dans la liste (1 - " + (connexionNumber - 1) + "). Veuillez saisir à nouveau : ");
                     checkChoice = false;
                 }
-            } catch (InputMismatchException e){
+            } catch (InputMismatchException e) {
                 System.err.println("Saisie d'un nombre attendue :" + e.getMessage());
                 checkChoice = false;
             }

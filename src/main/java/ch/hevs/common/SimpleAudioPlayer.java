@@ -19,11 +19,10 @@ public class SimpleAudioPlayer {
     // constructor to initialize streams and clip
     public SimpleAudioPlayer(InputStream is)
             throws UnsupportedAudioFileException,
-            IOException, LineUnavailableException
-    {
+            IOException, LineUnavailableException {
         // create AudioInputStream object
         audioInputStream = AudioSystem.getAudioInputStream(is);
-                //AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
+        //AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
 
         // create clip reference
         clip = AudioSystem.getClip();
@@ -34,8 +33,7 @@ public class SimpleAudioPlayer {
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
 
-    public void play()
-    {
+    public void play() {
         //start the clip
         clip.start();
         status = "play";
@@ -43,10 +41,8 @@ public class SimpleAudioPlayer {
     }
 
     // Method to pause the audio
-    public void pause()
-    {
-        if (status.equals("paused"))
-        {
+    public void pause() {
+        if (status.equals("paused")) {
             System.out.println("Le morceau est déjà en pause.");
             return;
         }
@@ -56,15 +52,13 @@ public class SimpleAudioPlayer {
         status = "paused";
     }
 
-    public void stop()
-    {
+    public void stop() {
         clip.stop();
     }
 
     // Method to reset audio stream
     public void resetAudioStream() throws UnsupportedAudioFileException, IOException,
-            LineUnavailableException
-    {
+            LineUnavailableException {
         audioInputStream = AudioSystem.getAudioInputStream(
                 new File(filePath).getAbsoluteFile());
         clip.open(audioInputStream);

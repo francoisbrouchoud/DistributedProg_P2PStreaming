@@ -59,7 +59,7 @@ public class ServerClientConnexion implements Runnable {
             clientSocketOnServer.close();
 
         } catch (IOException e) {
-            LogHelper.LogError(e,this.LOGGER);
+            LogHelper.LogError(e, this.LOGGER);
         }
     }
 
@@ -75,7 +75,7 @@ public class ServerClientConnexion implements Runnable {
                 }
             });
         } catch (IOException e) {
-            LogHelper.LogError(e,this.LOGGER);
+            LogHelper.LogError(e, this.LOGGER);
         }
     }
 
@@ -88,22 +88,24 @@ public class ServerClientConnexion implements Runnable {
             for (int i = 0; i < nbFiles; i++) {
                 files.add(buffIn.readLine());
             }
-            clients.put(new ClientInfo(clientId, ip, port, files));
+            clients.put(new ClientInfo(ip, port, files));
             System.out.println(clientId + " " + ip + " " + port);
         } catch (IOException e) {
-            LogHelper.LogError(e,this.LOGGER);
+            LogHelper.LogError(e, this.LOGGER);
         } catch (InterruptedException e) {
-            LogHelper.LogError(e,this.LOGGER);
+            LogHelper.LogError(e, this.LOGGER);
         }
 
     }
 
     private void getFilesList(PrintWriter pOut) {
         ArrayList<FileInfo> files = new ArrayList<>();
+        int id=0;
         for (ClientInfo client : clients) {
             for (String file : client.getFiles()) {
-                files.add(new FileInfo(client.getClientAdresse(), client.getClientPort(), file));
-                this.LOGGER.info(client.getClientAdresse()+":"+client.getClientPort()+" "+ file);
+                id++;
+                files.add(new FileInfo(id, client.getClientAdresse(), client.getClientPort(), file));
+                this.LOGGER.info(client.getClientAdresse() + ":" + client.getClientPort() + " " + file);
             }
         }
         pOut.println(files.size());

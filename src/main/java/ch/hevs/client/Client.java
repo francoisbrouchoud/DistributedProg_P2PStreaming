@@ -111,7 +111,7 @@ public class Client {
         System.exit(0);
     }
 
-    private static ArrayList<String> selectFiles(){
+    private static ArrayList<String> selectFiles() {
         ArrayList<String> files = new ArrayList<>();
 
         File localDir = new File(FILES_TO_SHARE_FOLDER);
@@ -202,7 +202,7 @@ public class Client {
 
         while (!found && files.size() > 0) {
             System.out.print("\u270E Saisir le n° du morceau : ");
-            try{
+            try {
                 idToListen = console.nextInt();
 
                 for (FileInfo file : files) {
@@ -212,7 +212,7 @@ public class Client {
                         found = true;
                     }
                 }
-            } catch (InputMismatchException e){
+            } catch (InputMismatchException e) {
                 System.err.println("Saisie d'un nombre attendu : " + e.getMessage());
                 found = false;
             }
@@ -362,7 +362,6 @@ public class Client {
     }
 
     private static ArrayList<FileInfo> getFilesList(BufferedReader buffIn) {
-        FileInfo.setUid(0);
         try {
             ArrayList<FileInfo> files = new ArrayList<>();
             int size = Integer.parseInt(buffIn.readLine());
@@ -370,7 +369,7 @@ public class Client {
                 String ip = buffIn.readLine();
                 int port = Integer.parseInt(buffIn.readLine());
                 String fileName = buffIn.readLine();
-                files.add(new FileInfo(ip, port, fileName));
+                files.add(new FileInfo(i, ip, port, fileName));
             }
             return files;
         } catch (IOException e) {

@@ -9,18 +9,18 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
-public class PairToPair implements Runnable{
+public class PairToPair implements Runnable {
     private Socket clientSocketOnServer;
     private int clientNumber;
     private Logger LOGGER;
 
     //Constructor
-    public PairToPair (Socket clientSocketOnServer, int clientNumber, Logger LOGGER)
-    {
+    public PairToPair(Socket clientSocketOnServer, int clientNumber, Logger LOGGER) {
         this.clientSocketOnServer = clientSocketOnServer;
         this.clientNumber = clientNumber;
         this.LOGGER = LOGGER;
     }
+
     @Override
     public void run() {
         try {
@@ -33,7 +33,7 @@ public class PairToPair implements Runnable{
 
             ActionP2P order = ActionP2P.values()[orderNumber];
 
-            switch (order){
+            switch (order) {
                 case LISTEN_AUDIO_FILE:
                     this.LOGGER.info("Listen file");
                     stream(buffIn);
@@ -46,19 +46,19 @@ public class PairToPair implements Runnable{
             clientSocketOnServer.close();
 
         } catch (IOException e) {
-            LogHelper.LogError(e,this.LOGGER);
+            LogHelper.LogError(e, this.LOGGER);
         }
     }
 
-    private void stream(BufferedReader buffIn){
+    private void stream(BufferedReader buffIn) {
         try {
 
             String fileName = buffIn.readLine();
-            String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
+            String filePath = Client.FILES_TO_SHARE_FOLDER + "\\" + fileName;
             long myFileSize = Files.size(Paths.get(filePath));
             File myFile = new File(filePath);
 
-            byte[] mybytearray = new byte[(int)myFileSize];
+            byte[] mybytearray = new byte[(int) myFileSize];
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
             bis.read(mybytearray, 0, mybytearray.length);
             bis.close();
@@ -68,24 +68,24 @@ public class PairToPair implements Runnable{
             os.flush();
             clientSocketOnServer.close();
         } catch (IOException e) {
-            LogHelper.LogError(e,this.LOGGER);
+            LogHelper.LogError(e, this.LOGGER);
         }
 
     }
 
-    private void download(BufferedReader buffIn){
+    private void download(BufferedReader buffIn) {
         try {
             PrintWriter pout = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
 
             String fileName = buffIn.readLine();
-            String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
+            String filePath = Client.FILES_TO_SHARE_FOLDER + "\\" + fileName;
             File myFile = new File(filePath);
             long myFileSize = Files.size(Paths.get(filePath));
 
             pout.println(myFileSize);
             pout.println(fileName);
 
-            byte[] mybytearray = new byte[(int)myFileSize];
+            byte[] mybytearray = new byte[(int) myFileSize];
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
             bis.read(mybytearray, 0, mybytearray.length);
             OutputStream os = null;
@@ -94,7 +94,7 @@ public class PairToPair implements Runnable{
             os.flush();
             clientSocketOnServer.close();
         } catch (IOException e) {
-            LogHelper.LogError(e,this.LOGGER);
+            LogHelper.LogError(e, this.LOGGER);
         }
     }
 }

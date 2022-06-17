@@ -4,15 +4,9 @@ import ch.hevs.common.ClientInfo;
 import ch.hevs.common.LogHelper;
 import ch.hevs.common.ServerBase;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
 public class ServerConnexion extends ServerBase {
     ArrayBlockingQueue<ClientInfo> clients;

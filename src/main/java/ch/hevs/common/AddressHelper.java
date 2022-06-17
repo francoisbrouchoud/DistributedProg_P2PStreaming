@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AddressHelper {
-    public static InetAddress ipInput()  {
+    public static InetAddress ipInput() {
         Scanner sc = new Scanner(System.in);
         String IP_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$";
         Pattern pattern = Pattern.compile(IP_REGEX);
@@ -18,11 +18,10 @@ public class AddressHelper {
             String ip = sc.next();
             Matcher matcher = pattern.matcher(ip);
             if (matcher.matches()) {
-                try{
+                try {
                     adresse = InetAddress.getByName(ip);
                     checkIp = true;
-                }
-                catch (UnknownHostException e){
+                } catch (UnknownHostException e) {
                     checkIp = false;
                 }
             } else {
