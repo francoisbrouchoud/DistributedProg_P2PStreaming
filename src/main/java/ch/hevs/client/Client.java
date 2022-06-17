@@ -1,7 +1,6 @@
 package ch.hevs.client;
 
 import ch.hevs.common.*;
-import ch.hevs.server.ServerConnexion;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -72,9 +71,9 @@ public class Client {
         }
     }
 
+
     private static void menu() {
         Scanner sc = new Scanner(System.in);
-
         // Afficher un menu dans la console
         // switch case en fonction des choix
         boolean exit = false;
@@ -172,52 +171,64 @@ public class Client {
                 System.out.println(file.getFileId() + ": " + file.getFileName() + " sur " + file.getIp() + ":" + file.getPort());
             }
 
-            int idToListen = -1;
-            boolean found = false;
-
-            while (!found && files.size() > 0) {
-                System.out.print("\u270E Saisir le n° du morceau : ");
-                idToListen = console.nextInt();
-
-                for (FileInfo file : files) {
-                    if (file.getFileId() == idToListen) {
-                        System.out.println("\u266a Morceau choisi : " + file.getFileName());
-                        char actionPlay = '-';
-                        System.out.print("\u25B6 Jouer (j) | \u2B07 Télécharger (t) | \u293A Quitter (q) : ");
-                        do {
-                            actionPlay = console.next().charAt(0);
-                            if (actionPlay == 'j')
-                                listen(file);
-                            else if (actionPlay == 't')
-                                getFile(file);
-                            else if (actionPlay == 'q')
-                                System.out.println("\u293A sortie");
-                            else
-                                System.err.print("Saisir (j) pour jouer \u25B6 | (t) pour télécharger \u2B07 | (q) pour quitter \u293A ");
-                        } while (actionPlay != 'j' && actionPlay != 't' && actionPlay != 'q');
-                        found = true;
-                    }
-                }
-
-                if (!found) System.err.println("\u274c Morceau non trouvé.");
+            boolean selectMusic = false;
+            do {
+                selectMusic(files);
 
                 System.out.print("\u2B6E Voulez-vous sélectionner un autre morceau (o/n) : ");
                 char command = '-';
                 do {
                     command = console.next().charAt(0);
                     if (command == 'o')
-                        found = false;
+                        selectMusic = false;
                     else if (command == 'n')
-                        found = true;
+                        selectMusic = true;
                     else
                         System.err.println("\u274c Saisir (o) pour oui / (n) pour non : ");
                 } while (command != 'o' && command != 'n');
-            }
+            } while (selectMusic == false);
 
         } catch (IOException e) {
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
             LogHelper.LogError(e, LOGGER);
         }
+    }
+
+    private static void selectMusic(ArrayList<FileInfo> files) {
+        Scanner console = new Scanner(System.in);
+        int idToListen = -1;
+        boolean found = false;
+
+        while (!found && files.size() > 0) {
+            System.out.print("\u270E Saisir le n° du morceau : ");
+            idToListen = console.nextInt();
+
+            for (FileInfo file : files) {
+                if (file.getFileId() == idToListen) {
+                    System.out.println("\u266a Morceau choisi : " + file.getFileName());
+                    actionMusic(file);
+                    found = true;
+                }
+            }
+            if (!found) System.err.println("\u274c Morceau non trouvé.");
+        }
+    }
+
+    private static void actionMusic(FileInfo file) {
+        Scanner console = new Scanner(System.in);
+        char actionPlay = '-';
+        System.out.print("\u25B6 Jouer (j) | \u2B07 Télécharger (t) | \u293A Quitter (q) : ");
+        do {
+            actionPlay = console.next().charAt(0);
+            if (actionPlay == 'j')
+                listen(file);
+            else if (actionPlay == 't')
+                getFile(file);
+            else if (actionPlay == 'q')
+                System.out.println("\u293A sortie");
+            else
+                System.err.print("Saisir (j) pour jouer \u25B6 | (t) pour télécharger \u2B07 | (q) pour quitter \u293A ");
+        } while (actionPlay != 'j' && actionPlay != 't' && actionPlay != 'q');
     }
 
     private static void listen(FileInfo file) {
