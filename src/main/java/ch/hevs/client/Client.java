@@ -174,7 +174,7 @@ public class Client {
                             if (actionPlay == 'j')
                                 listen(file);
                             else if (actionPlay == 't')
-                                download(file);
+                                getFile(file);
                             else if (actionPlay == 'q')
                                 System.out.println("\u293A sortie");
                             else
@@ -207,12 +207,17 @@ public class Client {
     private static void listen(FileInfo file) {
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
-
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionP2P.LISTEN_AUDIO_FILE.ordinal());
-
             pOut.println(file.getFileName());
+            stream(file, clientSocket);
+        } catch (IOException e) {
+            System.err.println("Problème d'accès au fichier : " + e.getMessage());
+        }
+    }
 
+    private static void stream(FileInfo file, Socket clientSocket) {
+        try {
             InputStream is = new BufferedInputStream(clientSocket.getInputStream());
 
             SimpleAudioPlayer player = new SimpleAudioPlayer(is);
@@ -249,7 +254,7 @@ public class Client {
         }
     }
 
-    private static void download(FileInfo file) {
+    private static void getFile(FileInfo file) {
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
 
@@ -258,6 +263,15 @@ public class Client {
 
             pOut.println(file.getFileName());
 
+            download(clientSocket, file);
+        } catch (IOException e) {
+            System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            ask();
+        }
+    }
+
+    private static void download(Socket clientSocket, FileInfo file) {
+        try {
             BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             int totalsize = Integer.parseInt(Buffin.readLine());
@@ -269,6 +283,7 @@ public class Client {
             FileOutputStream fos = new FileOutputStream(RECEPTION_FOLDER + "\\" + filename);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             int byteReadTot = 0;
+
             while (byteReadTot < totalsize) {
                 int byteRead = is.read(mybytearray, 0, mybytearray.length);
                 byteReadTot += byteRead;
@@ -277,6 +292,7 @@ public class Client {
 
             bos.close();
             clientSocket.close();
+
             System.out.println("\u2B07 Téléchargement terminé de " + file.getFileName());
         } catch (IOException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
