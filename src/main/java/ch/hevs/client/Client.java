@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -201,14 +202,19 @@ public class Client {
 
         while (!found && files.size() > 0) {
             System.out.print("\u270E Saisir le n° du morceau : ");
-            idToListen = console.nextInt();
+            try{
+                idToListen = console.nextInt();
 
-            for (FileInfo file : files) {
-                if (file.getFileId() == idToListen) {
-                    System.out.println("\u266a Morceau choisi : " + file.getFileName());
-                    actionMusic(file);
-                    found = true;
+                for (FileInfo file : files) {
+                    if (file.getFileId() == idToListen) {
+                        System.out.println("\u266a Morceau choisi : " + file.getFileName());
+                        actionMusic(file);
+                        found = true;
+                    }
                 }
+            } catch (InputMismatchException e){
+                System.err.println("Saisie d'un nombre attendu : " + e.getMessage());
+                found = false;
             }
             if (!found) System.err.println("\u274c Morceau non trouvé.");
         }
