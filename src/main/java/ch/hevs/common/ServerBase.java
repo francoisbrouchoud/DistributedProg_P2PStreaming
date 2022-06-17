@@ -67,12 +67,13 @@ public abstract class ServerBase implements Runnable {
     }
 
     private InetAddress ipAddressAssignment(Scanner sc, int connexionNumber, ArrayList<InetAddress> inetAddresses) {
-        boolean checkChoice = false;
+        boolean checkChoice;
         int choiceIP = -1;
         System.out.print("\u270E Saisir la connexion voulue (1 - " + (connexionNumber - 1) + ") : ");
         do {
             try {
-                choiceIP = sc.nextInt();
+                String inputChoice = sc.next();
+                choiceIP = Integer.parseInt(inputChoice);
                 if (choiceIP < connexionNumber && choiceIP > 0) {
                     checkChoice = true;
                 } else {
@@ -80,6 +81,9 @@ public abstract class ServerBase implements Runnable {
                     checkChoice = false;
                 }
             } catch (InputMismatchException e) {
+                System.err.println("Saisie d'un nombre attendue :" + e.getMessage());
+                checkChoice = false;
+            } catch (NumberFormatException e) {
                 System.err.println("Saisie d'un nombre attendue :" + e.getMessage());
                 checkChoice = false;
             }
