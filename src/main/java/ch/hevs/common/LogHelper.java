@@ -2,6 +2,7 @@ package ch.hevs.common;
 
 import ch.hevs.server.ServerConnexion;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,7 +29,7 @@ public class LogHelper {
         try{
             //Creating fileHandler
             // chez moi C:\Users\celin\AppData\Local\Temp
-            fileHandler  = new FileHandler("%t/JavaSocket/" + className + date + ".log", true);
+            fileHandler  = new FileHandler("%t/JavaSocket" + className + date + ".log", true);
             // Creating SimpleFormatter
             simpleFormatter = new SimpleFormatter();
             fileHandler.setFormatter(simpleFormatter);
