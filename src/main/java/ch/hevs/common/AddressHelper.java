@@ -7,25 +7,31 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AddressHelper {
-    public static InetAddress ipInput() throws UnknownHostException {
+    public static InetAddress ipInput()  {
         Scanner sc = new Scanner(System.in);
         String IP_REGEX = "^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$";
         Pattern pattern = Pattern.compile(IP_REGEX);
-        String ip = "";
+        InetAddress adresse = null;
         boolean checkIp = false;
         System.out.print("\u270E Saisir l'adresse IP du serveur : ");
         do {
-            ip = sc.next();
+            String ip = sc.next();
             Matcher matcher = pattern.matcher(ip);
-            if (matcher.matches() == true) {
-                checkIp = true;
+            if (matcher.matches()) {
+                try{
+                    adresse = InetAddress.getByName(ip);
+                    checkIp = true;
+                }
+                catch (UnknownHostException e){
+                    checkIp = false;
+                }
             } else {
                 System.err.print("\u2717 L'IP \"" + ip + "\" ne correspond pas au format IPV4. Saisir à nouveau : ");
                 checkIp = false;
             }
         } while (!checkIp);
 
-        return InetAddress.getByName(ip);
+        return adresse;
     }
 
     public static int portInput() {

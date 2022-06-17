@@ -1,10 +1,6 @@
 package ch.hevs.client;
 
-import ch.hevs.common.ActionClientServer;
-import ch.hevs.common.ActionP2P;
-import ch.hevs.common.FileInfo;
-import ch.hevs.common.SimpleAudioPlayer;
-import ch.hevs.common.AddressHelper;
+import ch.hevs.common.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -32,6 +28,7 @@ public class Client {
 
     public static void main(String[] args) {
 
+        // création des dossiers de partage et de récéption
         File receptionFolder = new File(RECEPTION_FOLDER);
         if (!receptionFolder.exists()) {
             receptionFolder.mkdir();
@@ -41,23 +38,35 @@ public class Client {
             sharedFolder.mkdir();
         }
 
+        // création du server qui partage les fichiers
         server = new ServerPairToPair();
         Thread t = new Thread(server);
         t.start();
 
-        Scanner sc = new Scanner(System.in);
-        dataInput(sc);
+        // saisi addresse ip du server
+        serverConfig();
+
+        // affichage du menu
+        menu();
     }
 
-    private static void dataInput(Scanner sc) {
+    private static void serverConfig() {
+
+        System.out.println("**********************************************");
+        serverAddress = AddressHelper.ipInput();
+        System.out.println("\u2714 Adresse du serveur : " + serverAddress.getHostAddress() + " saisie.");
+        serverPort = AddressHelper.portInput();
         try {
-            System.out.println("**********************************************");
-            serverAddress = AddressHelper.ipInput();
-            System.out.println("\u2714 Adresse du serveur : " + serverAddress.getHostAddress() + " saisie.");
-            serverPort = AddressHelper.portInput();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            Socket clientSocket = new Socket(serverAddress, serverPort);
+            clientSocket.close();
+        } catch (IOException e) {
+            System.err.println("Erreur de connexion au serveur : " + e.getMessage());
+            serverConfig();
         }
+    }
+
+    private static void menu() {
+        Scanner sc = new Scanner(System.in);
 
         // Afficher un menu dans la console
         // switch case en fonction des choix
@@ -65,13 +74,12 @@ public class Client {
         do {
             System.out.print("\u2B83 Vous pouvez saisir : (p) pour enregistrer les fichiers à partager | (d) pour demander la liste des fichiers disponibles | (q) pour quitter : ");
             String action = sc.next();
-
             switch (action) {
                 case "p":
                     share(sc);
                     break;
                 case "d":
-                    ask(sc);
+                    ask();
                     break;
                 case "q":
                     exit = true;
@@ -90,7 +98,6 @@ public class Client {
             clientSocket.close();
         } catch (IOException e) {
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
-            dataInput(new Scanner(System.in));
         }
         System.out.println("Merci d'avoir utilisé notre application !");
         System.exit(0);
@@ -134,22 +141,21 @@ public class Client {
             clientSocket.close();
         } catch (IOException e) {
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
-            dataInput(console);
         }
     }
 
-    private static void ask(Scanner console) {
+    private static void ask() {
+        Scanner console = new Scanner(System.in);
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
             BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionClientServer.GET_FILES_LIST.ordinal());
             ArrayList<FileInfo> files = getFilesList(buffIn);
-
+            clientSocket.close();
             for (FileInfo file : files) {
                 System.out.println(file.getFileId() + ": " + file.getFileName() + " sur " + file.getIp() + ":" + file.getPort());
             }
-            clientSocket.close();
 
             int idToListen = -1;
             boolean found = false;
@@ -195,7 +201,6 @@ public class Client {
 
         } catch (IOException e) {
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
-            dataInput(console);
         }
     }
 
@@ -235,28 +240,25 @@ public class Client {
             } while (playAction != 'q');
         } catch (UnknownHostException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
-            ask(new Scanner(System.in));
         } catch (IOException e) {
             System.err.println("Problème d'accès au fichier : " + e.getMessage());
-            ask(new Scanner(System.in));
         } catch (UnsupportedAudioFileException e) {
             System.err.println("Problème de lecture du fichier audio : " + e.getMessage());
-            ask(new Scanner(System.in));
         } catch (LineUnavailableException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
-            ask(new Scanner(System.in));
         }
     }
 
     private static void download(FileInfo file) {
         try {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
-            BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionP2P.DOWNLOAD_AUDIO_FILE.ordinal());
 
             pOut.println(file.getFileName());
+
+            BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
             int totalsize = Integer.parseInt(Buffin.readLine());
             String filename = Buffin.readLine();
@@ -278,10 +280,10 @@ public class Client {
             System.out.println("\u2B07 Téléchargement terminé de " + file.getFileName());
         } catch (IOException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
-            ask(new Scanner(System.in));
-        } catch (NumberFormatException e){
+            ask();
+        } catch (NumberFormatException e) {
             System.err.println("Problème d'accès au fichier : " + e.getMessage());
-            ask(new Scanner(System.in));
+            ask();
         }
     }
 
