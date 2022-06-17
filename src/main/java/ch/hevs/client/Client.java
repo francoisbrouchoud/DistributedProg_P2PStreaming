@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class Client {
     static final String RECEPTION_FOLDER = "receivedFiles";
     static final String FILES_TO_SHARE_FOLDER = "sharedFiles";
-    static ServerPairToPair server;
+    static ServerPeerToPeer server;
     public static InetAddress serverAddress;
     public static int serverPort;
     private static Logger LOGGER;
@@ -45,7 +45,7 @@ public class Client {
         }
 
         // création du server qui partage les fichiers
-        server = new ServerPairToPair(LOGGER);
+        server = new ServerPeerToPeer(LOGGER);
         Thread t = new Thread(server);
         t.start();
 

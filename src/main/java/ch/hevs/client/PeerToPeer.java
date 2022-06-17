@@ -9,13 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 
-public class PairToPair implements Runnable {
+public class PeerToPeer implements Runnable {
     private Socket clientSocketOnServer;
     private int clientNumber;
     private Logger LOGGER;
 
     //Constructor
-    public PairToPair(Socket clientSocketOnServer, int clientNumber, Logger LOGGER) {
+    public PeerToPeer(Socket clientSocketOnServer, int clientNumber, Logger LOGGER) {
         this.clientSocketOnServer = clientSocketOnServer;
         this.clientNumber = clientNumber;
         this.LOGGER = LOGGER;
