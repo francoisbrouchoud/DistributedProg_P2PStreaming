@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public abstract class ServerBase implements Runnable {
@@ -70,12 +71,16 @@ public abstract class ServerBase implements Runnable {
         int choiceIP = -1;
         System.out.print("\u270E Saisir la connexion voulue (1 - " + (connexionNumber - 1) + ") : ");
         do {
-            choiceIP = sc.nextInt();
-
-            if (choiceIP < connexionNumber && choiceIP > 0) {
-                checkChoice = true;
-            } else {
-                System.err.print("\u2717 L'interface saisie n'est pas dans la liste (1 - " + (connexionNumber - 1) + "). Veuillez saisir à nouveau : ");
+            try{
+                choiceIP = sc.nextInt();
+                if (choiceIP < connexionNumber && choiceIP > 0) {
+                    checkChoice = true;
+                } else {
+                    System.err.print("\u2717 L'interface saisie n'est pas dans la liste (1 - " + (connexionNumber - 1) + "). Veuillez saisir à nouveau : ");
+                    checkChoice = false;
+                }
+            } catch (InputMismatchException e){
+                System.err.println("Saisie d'un nombre attendue :" + e.getMessage());
                 checkChoice = false;
             }
         } while (!checkChoice);
