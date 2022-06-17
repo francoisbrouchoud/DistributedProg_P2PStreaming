@@ -17,6 +17,10 @@ public abstract class ServerBase implements Runnable {
         this.socketServer = createServer();
     }
 
+    /**
+     * Création du serveur
+     * @return mySkServer
+     */
     private ServerSocket createServer() {
         try {
             //list of all interfaces

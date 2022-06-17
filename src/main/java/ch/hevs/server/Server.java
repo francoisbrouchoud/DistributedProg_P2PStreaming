@@ -1,11 +1,7 @@
 package ch.hevs.server;
 
-/***
- * Role:
- * - Etre à l'écoute des clients
- * - Stocke une liste de fichiers avec ip et port
- * - Dire l'ip et port pour retrouver un fichier
- * - Lister les fichiers dispo
+/**
+ * Classe qui contient un main pour créer un exécutable serveur.
  */
 public class Server {
 

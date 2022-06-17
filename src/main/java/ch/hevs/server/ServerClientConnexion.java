@@ -21,7 +21,6 @@ public class ServerClientConnexion implements Runnable {
     private ArrayBlockingQueue<ClientInfo> clients;
     private Logger LOGGER;
 
-    //Constructor
     public ServerClientConnexion(Socket clientSocketOnServer, ArrayBlockingQueue<ClientInfo> clients, Logger logger) {
         this.clientSocketOnServer = clientSocketOnServer;
         this.clientId = clientSocketOnServer.getInetAddress() + ":" + clientSocketOnServer.getPort();
@@ -32,19 +31,19 @@ public class ServerClientConnexion implements Runnable {
     @Override
     public void run() {
         try {
-            // création des reader et des writer
+            // Création des reader et des writer
             BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
             PrintWriter pOut = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
 
-            //écoute la commande
+            // Ecoute la commande
             int orderNumber = Integer.parseInt(buffIn.readLine());
             ActionClientServer order = ActionClientServer.values()[orderNumber];
 
-            //TODO switch case des commande possible
-            //Création de fonction par cas
+
+            // Création de fonction par cas
             switch (order) {
                 case TEST_CONNEXION:
-                    this.LOGGER.info("test connexion");
+                    this.LOGGER.info("Test connexion");
                     break;
                 case GET_FILES_LIST:
                     this.LOGGER.info("Get files list");
@@ -66,6 +65,10 @@ public class ServerClientConnexion implements Runnable {
         }
     }
 
+    /**
+     * Suppression de clients sur le serveur
+     * @param buffIn
+     */
     private void deleteClient(BufferedReader buffIn) {
         try {
             String ip = buffIn.readLine();
@@ -74,7 +77,7 @@ public class ServerClientConnexion implements Runnable {
             clients.removeIf(new Predicate<ClientInfo>() {
                 @Override
                 public boolean test(ClientInfo client) {
-                    return client.getClientAdresse().equals(ip) && client.getClientPort() == port;
+                    return client.getClientAddress().equals(ip) && client.getClientPort() == port;
                 }
             });
         } catch (IOException e) {
@@ -82,6 +85,10 @@ public class ServerClientConnexion implements Runnable {
         }
     }
 
+    /**
+     * Partage de la liste des fichiers
+     * @param buffIn
+     */
     private void shareFilesList(BufferedReader buffIn) {
         try {
             String ip = buffIn.readLine();
@@ -101,14 +108,18 @@ public class ServerClientConnexion implements Runnable {
 
     }
 
+    /**
+     * Fourni la liste des fichiers
+     * @param pOut
+     */
     private void getFilesList(PrintWriter pOut) {
         ArrayList<FileInfo> files = new ArrayList<>();
         int id=0;
         for (ClientInfo client : clients) {
             for (String file : client.getFiles()) {
                 id++;
-                files.add(new FileInfo(id, client.getClientAdresse(), client.getClientPort(), file));
-                this.LOGGER.info(client.getClientAdresse() + ":" + client.getClientPort() + " " + file);
+                files.add(new FileInfo(id, client.getClientAddress(), client.getClientPort(), file));
+                this.LOGGER.info(client.getClientAddress() + ":" + client.getClientPort() + " " + file);
             }
         }
         pOut.println(files.size());
