@@ -348,7 +348,7 @@ public class Client {
     }
 
     private static void disconnect(PrintWriter pOut) {
-        pOut.println(server.getServerAddress());
+        pOut.println(server.getServerAddress().getHostAddress());
         pOut.println(server.getServerPort());
     }
 
