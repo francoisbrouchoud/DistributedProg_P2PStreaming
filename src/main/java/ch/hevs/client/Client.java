@@ -64,6 +64,8 @@ public class Client {
         serverPort = AddressHelper.portInput();
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
+            PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
+            pOut.println(ActionClientServer.TEST_CONNEXION.ordinal());
             clientSocket.close();
         } catch (IOException e) {
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());

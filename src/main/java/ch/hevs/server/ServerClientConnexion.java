@@ -43,6 +43,9 @@ public class ServerClientConnexion implements Runnable {
             //TODO switch case des commande possible
             //Création de fonction par cas
             switch (order) {
+                case TEST_CONNEXION:
+                    this.LOGGER.info("test connexion");
+                    break;
                 case GET_FILES_LIST:
                     this.LOGGER.info("Get files list");
                     getFilesList(pOut);
