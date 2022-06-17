@@ -36,11 +36,11 @@ public class PairToPair implements Runnable{
             switch (order){
                 case LISTEN_AUDIO_FILE:
                     this.LOGGER.info("Listen file");
-                    stream();
+                    stream(buffIn);
                     break;
                 case DOWNLOAD_AUDIO_FILE:
                     this.LOGGER.info("Download file");
-                    download();
+                    download(buffIn);
                     break;
             }
             clientSocketOnServer.close();
@@ -50,9 +50,8 @@ public class PairToPair implements Runnable{
         }
     }
 
-    private void stream(){
+    private void stream(BufferedReader buffIn){
         try {
-            BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
 
             String fileName = buffIn.readLine();
             String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
@@ -74,9 +73,8 @@ public class PairToPair implements Runnable{
 
     }
 
-    private void download(){
+    private void download(BufferedReader buffIn){
         try {
-            BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
             PrintWriter pout = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
 
             String fileName = buffIn.readLine();
