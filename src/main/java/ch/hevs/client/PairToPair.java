@@ -1,21 +1,25 @@
 package ch.hevs.client;
 
 import ch.hevs.common.ActionP2P;
+import ch.hevs.common.LogHelper;
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.logging.Logger;
 
 public class PairToPair implements Runnable{
     private Socket clientSocketOnServer;
     private int clientNumber;
+    private Logger LOGGER;
 
     //Constructor
-    public PairToPair (Socket clientSocketOnServer, int clientNumber)
+    public PairToPair (Socket clientSocketOnServer, int clientNumber, Logger LOGGER)
     {
         this.clientSocketOnServer = clientSocketOnServer;
         this.clientNumber = clientNumber;
+        this.LOGGER = LOGGER;
     }
     @Override
     public void run() {
@@ -23,6 +27,7 @@ public class PairToPair implements Runnable{
             // Création des reader et des writer
             BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
             PrintWriter pOut = new PrintWriter(clientSocketOnServer.getOutputStream());
+
             // Ecoute la commande
             int orderNumber = Integer.parseInt(buffIn.readLine());
             String filePath = buffIn.readLine();
@@ -30,16 +35,18 @@ public class PairToPair implements Runnable{
 
             switch (order){
                 case LISTEN_AUDIO_FILE:
+                    this.LOGGER.info("Listen file");
                     stream(filePath);
                     break;
                 case DOWNLOAD_AUDIO_FILE:
+                    this.LOGGER.info("Download file");
                     download(filePath);
                     break;
             }
             clientSocketOnServer.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.LogError(e,this.LOGGER);
         }
     }
 
@@ -62,7 +69,7 @@ public class PairToPair implements Runnable{
             os.flush();
             clientSocketOnServer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.LogError(e,this.LOGGER);
         }
 
     }
@@ -88,7 +95,7 @@ public class PairToPair implements Runnable{
             os.flush();
             clientSocketOnServer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LogHelper.LogError(e,this.LOGGER);
         }
     }
 }

@@ -1,6 +1,7 @@
 package ch.hevs.client;
 
 import ch.hevs.common.*;
+import ch.hevs.server.ServerConnexion;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -10,6 +11,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 /***
  * Role:
@@ -25,8 +27,12 @@ public class Client {
     static ServerPairToPair server;
     public static InetAddress serverAddress;
     public static int serverPort;
+    private static Logger LOGGER;
 
     public static void main(String[] args) {
+
+        // configuration du logger
+        LOGGER = LogHelper.loggerConfig(Client.class.getName());
 
         // création des dossiers de partage et de récéption
         File receptionFolder = new File(RECEPTION_FOLDER);
@@ -39,7 +45,7 @@ public class Client {
         }
 
         // création du server qui partage les fichiers
-        server = new ServerPairToPair();
+        server = new ServerPairToPair(LOGGER);
         Thread t = new Thread(server);
         t.start();
 
@@ -61,6 +67,7 @@ public class Client {
             clientSocket.close();
         } catch (IOException e) {
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
             serverConfig();
         }
     }
@@ -97,6 +104,7 @@ public class Client {
             disconnect(pOut);
             clientSocket.close();
         } catch (IOException e) {
+            LogHelper.LogError(e, LOGGER);
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
         }
         System.out.println("Merci d'avoir utilisé notre application !");
@@ -140,6 +148,7 @@ public class Client {
             System.out.println("\u2B06 Vos fichiers ont été partagés.");
             clientSocket.close();
         } catch (IOException e) {
+            LogHelper.LogError(e, LOGGER);
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
         }
     }
@@ -314,6 +323,7 @@ public class Client {
             }
             return files;
         } catch (IOException e) {
+            LogHelper.LogError(e, LOGGER);
             e.printStackTrace();
         }
         return null;
