@@ -86,7 +86,7 @@ public class ServerClientConnexion implements Runnable {
     }
 
     /**
-     * Partage de la liste des fichiers
+     * Ajout des morceaux du client à la liste des fichiers
      * @param buffIn
      */
     private void shareFilesList(BufferedReader buffIn) {
@@ -109,7 +109,7 @@ public class ServerClientConnexion implements Runnable {
     }
 
     /**
-     * Fourni la liste des fichiers
+     * Fourni la liste des fichiers audio enregistrés sur le serveur
      * @param pOut
      */
     private void getFilesList(PrintWriter pOut) {

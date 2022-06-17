@@ -19,11 +19,11 @@ public abstract class ServerBase implements Runnable {
 
     /**
      * Création du serveur
-     * @return mySkServer
+     * @return socket
      */
     private ServerSocket createServer() {
         try {
-            //list of all interfaces
+            // Liste des interfaces
             Enumeration<NetworkInterface> allni;
             System.out.println("\u2315 Liste des connexions disponibles : ");
             ArrayList<InetAddress> inetAddresses = new ArrayList<InetAddress>();
@@ -31,7 +31,6 @@ public abstract class ServerBase implements Runnable {
             int connexionNumber = 1;
             while (allni.hasMoreElements()) {
                 NetworkInterface nix = allni.nextElement();
-                //get the interfaces names if connected
                 if (nix.isUp()) {
                     Enumeration<InetAddress> localAddress = nix.getInetAddresses();
                     while (localAddress.hasMoreElements()) {
@@ -70,6 +69,13 @@ public abstract class ServerBase implements Runnable {
         return null;
     }
 
+    /**
+     * Attribution de l'adresse IP du serveur parmi la liste des interfaces
+     * @param sc
+     * @param connexionNumber
+     * @param inetAddresses
+     * @return InetAddress du serveur
+     */
     private InetAddress ipAddressAssignment(Scanner sc, int connexionNumber, ArrayList<InetAddress> inetAddresses) {
         boolean checkChoice;
         int choiceIP = -1;
@@ -95,6 +101,11 @@ public abstract class ServerBase implements Runnable {
         return inetAddresses.get(choiceIP - 1);
     }
 
+    /**
+     * Attribution du port du serveur
+     * @param sc
+     * @return port du serveur
+     */
     private int portAssignment(Scanner sc) {
         System.out.print("\u2714 IP " + serverAddress.getHostAddress() + " choisie. Sélection automatique du port ? (o/n) : ");
         char choice = '-';

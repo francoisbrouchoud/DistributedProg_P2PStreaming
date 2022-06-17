@@ -7,7 +7,7 @@ import java.util.logging.*;
 
 public class LogHelper {
     /**
-     * Formatte un excpetion pour logger son message et sa trace
+     * Formate un excpetion pour logger son message et sa trace
      * @param e
      * @param logger
      */
@@ -34,14 +34,14 @@ public class LogHelper {
         String date = simpleDateFormat.format(new Date());
 
         try {
-            // Creating fileHandler
+            // Création Filehandler
             // Dans C:\Users\[user]\AppData\Local\Temp
             fileHandler = new FileHandler("%t/JavaSocket" + className + date + ".log", true);
-            // Creating SimpleFormatter
+            // Création SimpleFormatter
             simpleFormatter = new SimpleFormatter();
             fileHandler.setFormatter(simpleFormatter);
 
-            // Assigning handlers to LOGGER object
+            // Assigne handlers à l'objet LOGGER
             logger.addHandler(fileHandler);
 
             // Setting levels to handlers and LOGGER
