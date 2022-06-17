@@ -83,7 +83,7 @@ public class Client {
             String action = sc.next();
             switch (action) {
                 case "p":
-                    share(sc);
+                    share();
                     break;
                 case "d":
                     ask();
@@ -111,7 +111,7 @@ public class Client {
         System.exit(0);
     }
 
-    private static void share(Scanner console) {
+    private static ArrayList<String> selectFiles(){
         ArrayList<String> files = new ArrayList<>();
 
         File localDir = new File(FILES_TO_SHARE_FOLDER);
@@ -127,6 +127,7 @@ public class Client {
         if (pos == 0) {
             System.err.println("\u274c Le dossier shareFiles ne contient aucun fichier lisibles. Ajouter des fichiers wav et réessayer. ");
         } else {
+            Scanner console = new Scanner(System.in);
             char fileInput;
             do {
                 System.out.print("\u270E Ajouter le n° du fichier à partager. Saisir (t) pour terminer la saisie : ");
@@ -139,6 +140,11 @@ public class Client {
                     System.err.print("\u274c Saisie non reconnue. Réessayer : ");
             } while (fileInput != 't');
         }
+        return files;
+    }
+
+    private static void share() {
+        ArrayList<String> files = selectFiles();
 
         try {
             Socket clientSocket = new Socket(serverAddress, serverPort);
@@ -210,6 +216,7 @@ public class Client {
 
         } catch (IOException e) {
             System.err.println("Erreur de connexion au serveur : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
         }
     }
 
@@ -220,8 +227,10 @@ public class Client {
             pOut.println(ActionP2P.LISTEN_AUDIO_FILE.ordinal());
             pOut.println(file.getFileName());
             stream(file, clientSocket);
+            clientSocket.close();
         } catch (IOException e) {
             System.err.println("Problème d'accès au fichier : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
         }
     }
 
@@ -254,12 +263,16 @@ public class Client {
             } while (playAction != 'q');
         } catch (UnknownHostException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
         } catch (IOException e) {
             System.err.println("Problème d'accès au fichier : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
         } catch (UnsupportedAudioFileException e) {
             System.err.println("Problème de lecture du fichier audio : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
         } catch (LineUnavailableException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
         }
     }
 
@@ -275,6 +288,7 @@ public class Client {
             download(clientSocket, file);
         } catch (IOException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
             ask();
         }
     }
@@ -305,9 +319,11 @@ public class Client {
             System.out.println("\u2B07 Téléchargement terminé de " + file.getFileName());
         } catch (IOException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
             ask();
         } catch (NumberFormatException e) {
             System.err.println("Problème d'accès au fichier : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
             ask();
         }
     }
