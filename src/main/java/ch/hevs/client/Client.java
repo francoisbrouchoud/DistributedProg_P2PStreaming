@@ -225,8 +225,7 @@ public class Client {
             Socket clientSocket = new Socket(file.getIp(), file.getPort());
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionP2P.LISTEN_AUDIO_FILE.ordinal());
-            pOut.println(file.getFileName());
-            stream(file, clientSocket);
+            stream(clientSocket, file);
             clientSocket.close();
         } catch (IOException e) {
             System.err.println("Problème d'accès au fichier : " + e.getMessage());
@@ -234,10 +233,13 @@ public class Client {
         }
     }
 
-    private static void stream(FileInfo file, Socket clientSocket) {
+    private static void stream(Socket clientSocket, FileInfo file) {
         try {
-            InputStream is = new BufferedInputStream(clientSocket.getInputStream());
+            PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
 
+            pOut.println(file.getFileName());
+
+            InputStream is = new BufferedInputStream(clientSocket.getInputStream());
             SimpleAudioPlayer player = new SimpleAudioPlayer(is);
             System.out.println("\u266B\u266B\u266B Lecture de " + file.getFileName() + " depuis " + clientSocket.getRemoteSocketAddress() + " \u266B\u266B\u266B");
             System.out.println("Commandes : l = \u25B6 | p = \u23F8 | q = \u23F9 ");
@@ -254,7 +256,6 @@ public class Client {
                     System.out.println("\u23F8");
                 } else if (playAction == 'q') {
                     clientSocket.close();
-                    //TODO voir pour arreter la musique différement
                     player.stop();
                     System.out.println("\u23F9 Arrêt de la lecture de " + file.getFileName());
                 } else {
@@ -283,9 +284,8 @@ public class Client {
             PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
             pOut.println(ActionP2P.DOWNLOAD_AUDIO_FILE.ordinal());
 
-            pOut.println(file.getFileName());
-
             download(clientSocket, file);
+            clientSocket.close();
         } catch (IOException e) {
             System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
             LogHelper.LogError(e, LOGGER);
@@ -295,14 +295,16 @@ public class Client {
 
     private static void download(Socket clientSocket, FileInfo file) {
         try {
-            BufferedReader Buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            BufferedReader buffin = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
 
-            int totalsize = Integer.parseInt(Buffin.readLine());
-            String filename = Buffin.readLine();
+            pOut.println(file.getFileName());
+
+            int totalsize = Integer.parseInt(buffin.readLine());
+            String filename = buffin.readLine();
+
             byte[] mybytearray = new byte[totalsize];
-
             InputStream is = new BufferedInputStream(clientSocket.getInputStream());
-
             FileOutputStream fos = new FileOutputStream(RECEPTION_FOLDER + "\\" + filename);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             int byteReadTot = 0;

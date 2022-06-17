@@ -30,17 +30,17 @@ public class PairToPair implements Runnable{
 
             // Ecoute la commande
             int orderNumber = Integer.parseInt(buffIn.readLine());
-            String filePath = buffIn.readLine();
+
             ActionP2P order = ActionP2P.values()[orderNumber];
 
             switch (order){
                 case LISTEN_AUDIO_FILE:
                     this.LOGGER.info("Listen file");
-                    stream(filePath);
+                    stream();
                     break;
                 case DOWNLOAD_AUDIO_FILE:
                     this.LOGGER.info("Download file");
-                    download(filePath);
+                    download();
                     break;
             }
             clientSocketOnServer.close();
@@ -50,21 +50,21 @@ public class PairToPair implements Runnable{
         }
     }
 
-    private void stream(String fileName){
-        String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
-        File myFile = new File(filePath);
-
-        long myFileSize = 0;
+    private void stream(){
         try {
-            myFileSize = Files.size(Paths.get(filePath));
+            BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
+
+            String fileName = buffIn.readLine();
+            String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
+            long myFileSize = Files.size(Paths.get(filePath));
+            File myFile = new File(filePath);
 
             byte[] mybytearray = new byte[(int)myFileSize];
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
             bis.read(mybytearray, 0, mybytearray.length);
             bis.close();
 
-            OutputStream os = null;
-            os = clientSocketOnServer.getOutputStream();
+            OutputStream os = clientSocketOnServer.getOutputStream();
             os.write(mybytearray, 0, mybytearray.length);
             os.flush();
             clientSocketOnServer.close();
@@ -74,20 +74,21 @@ public class PairToPair implements Runnable{
 
     }
 
-    private void download(String fileName){
-        String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
-        File myFile = new File(filePath);
-        long myFileSize = 0;
+    private void download(){
         try {
-            myFileSize = Files.size(Paths.get(filePath));
-            PrintWriter Pout2 = null;
-            Pout2 = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
-            Pout2.println(myFileSize);
-            Pout2.println(fileName);
+            BufferedReader buffIn = new BufferedReader(new InputStreamReader(clientSocketOnServer.getInputStream()));
+            PrintWriter pout = new PrintWriter(clientSocketOnServer.getOutputStream(), true);
+
+            String fileName = buffIn.readLine();
+            String filePath = Client.FILES_TO_SHARE_FOLDER +  "\\" + fileName;
+            File myFile = new File(filePath);
+            long myFileSize = Files.size(Paths.get(filePath));
+
+            pout.println(myFileSize);
+            pout.println(fileName);
 
             byte[] mybytearray = new byte[(int)myFileSize];
-            BufferedInputStream bis = null;
-            bis = new BufferedInputStream(new FileInputStream(myFile));
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
             bis.read(mybytearray, 0, mybytearray.length);
             OutputStream os = null;
             os = clientSocketOnServer.getOutputStream();
