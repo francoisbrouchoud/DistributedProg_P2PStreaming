@@ -418,7 +418,7 @@ public class Client {
                 String ip = buffIn.readLine();
                 int port = Integer.parseInt(buffIn.readLine());
                 String fileName = buffIn.readLine();
-                files.add(new FileInfo(i, ip, port, fileName));
+                files.add(new FileInfo(i+1, ip, port, fileName));
             }
             return files;
         } catch (IOException e) {
