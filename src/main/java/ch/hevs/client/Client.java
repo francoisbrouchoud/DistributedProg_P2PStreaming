@@ -274,6 +274,28 @@ public class Client {
     }
 
     /**
+     * Demande d'obtention du fichier
+     * @param file
+     */
+    private static void getFile(FileInfo file) {
+        try {
+            Socket clientSocket = new Socket(file.getIp(), file.getPort());
+
+            PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
+            pOut.println(ActionP2P.DOWNLOAD_AUDIO_FILE.ordinal());
+
+            download(clientSocket, file);
+            clientSocket.close();
+        } catch (IOException e) {
+            System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
+            LogHelper.LogError(e, LOGGER);
+            ask();
+        }
+    }
+
+    //region Lien pair à pair
+
+    /**
      * Stream du fichier audio
      * @param clientSocket
      * @param file
@@ -322,27 +344,6 @@ public class Client {
         }
     }
 
-
-    /**
-     * Demande d'obtention du fichier
-     * @param file
-     */
-    private static void getFile(FileInfo file) {
-        try {
-            Socket clientSocket = new Socket(file.getIp(), file.getPort());
-
-            PrintWriter pOut = new PrintWriter(clientSocket.getOutputStream(), true);
-            pOut.println(ActionP2P.DOWNLOAD_AUDIO_FILE.ordinal());
-
-            download(clientSocket, file);
-            clientSocket.close();
-        } catch (IOException e) {
-            System.err.println("Problème d'accès à l'autre client : " + e.getMessage());
-            LogHelper.LogError(e, LOGGER);
-            ask();
-        }
-    }
-
     /**
      * Téléchargement du fichier
      * @param clientSocket
@@ -384,6 +385,10 @@ public class Client {
             ask();
         }
     }
+
+    //endregion
+
+    //region Lien avec serveur
 
     private static void disconnect(PrintWriter pOut) {
         pOut.println(server.getServerAddress().getHostAddress());
@@ -427,4 +432,5 @@ public class Client {
         }
         return null;
     }
+    //endregion
 }
