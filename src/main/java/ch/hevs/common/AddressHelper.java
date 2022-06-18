@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class AddressHelper {
     /**
      * Saisie et vérification de l'adresse IP
-     * @return adresse
+     * @return InetAddress en IPv4
      */
     public static InetAddress ipInput() {
         Scanner sc = new Scanner(System.in);
@@ -39,7 +39,7 @@ public class AddressHelper {
 
     /**
      * Saisie et vérification du port
-     * @return port
+     * @return port saisi et conforme
      */
     public static int portInput() {
         Scanner sc = new Scanner(System.in);

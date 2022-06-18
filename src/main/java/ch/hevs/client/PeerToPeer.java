@@ -49,12 +49,11 @@ public class PeerToPeer implements Runnable {
     }
 
     /**
-     * Streamn le fichier audio
+     * Stream le fichier audio
      * @param buffIn
      */
     private void stream(BufferedReader buffIn) {
         try {
-
             String fileName = buffIn.readLine();
             String filePath = Client.FILES_TO_SHARE_FOLDER + "\\" + fileName;
             long myFileSize = Files.size(Paths.get(filePath));

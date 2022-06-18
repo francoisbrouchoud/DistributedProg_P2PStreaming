@@ -13,7 +13,7 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-/***
+/**
  * Classe qui contient un main pour créer un exécutable client.
  */
 public class Client {
@@ -44,7 +44,7 @@ public class Client {
         Thread t = new Thread(server);
         t.start();
 
-        // Saisie de l'addresse IP du serveur
+        // Saisie de l'addresse IP + port du serveur et connexion
         serverConfig();
 
         // Affichage du menu
@@ -92,8 +92,8 @@ public class Client {
         exit();
     }
 
-    /***
-     * Sortie avec suppression des morceaux dans le registre du serveur
+    /**
+     * Sortie avec appel du logout du server pour une suppression des morceaux dans son registre
      */
     private static void exit() {
         try {
@@ -110,43 +110,7 @@ public class Client {
         System.exit(0);
     }
 
-    /***
-     * Sélection des fichiers .wav à répertorier
-     * @return files
-     */
-    private static ArrayList<String> selectFiles() {
-        ArrayList<String> files = new ArrayList<>();
-
-        File localDir = new File(FILES_TO_SHARE_FOLDER);
-        File[] localFiles = localDir.listFiles();
-        int pos = 0;
-        for (File fileElt : localFiles) {
-            String fileName = fileElt.getName();
-            if (fileElt.isFile() && fileName.substring(Math.max(0, fileName.length() - 4)).equals(".wav")) {
-                pos++;
-                System.out.println(pos + ") " + fileName);
-            }
-        }
-        if (pos == 0) {
-            System.err.println("\u274c Le dossier shareFiles ne contient aucun fichier lisibles. Ajouter des fichiers wav et réessayer. ");
-        } else {
-            Scanner console = new Scanner(System.in);
-            char fileInput;
-            do {
-                System.out.print("\u270E Ajouter le n° du fichier à partager. Saisir (t) pour terminer la saisie : ");
-                fileInput = console.next().charAt(0);
-                if (Character.getNumericValue(fileInput) > 0 && Character.getNumericValue(fileInput) <= pos)
-                    files.add(localFiles[Character.getNumericValue(fileInput - 1)].getName());
-                else if (fileInput == 't')
-                    System.out.print("\u2714 Saisie terminée. Contact du serveur en cours... ");
-                else
-                    System.err.print("\u274c Saisie non reconnue. Réessayer : ");
-            } while (fileInput != 't');
-        }
-        return files;
-    }
-
-    /***
+    /**
      * Partage des fichiers au serveur
      */
     private static void share() {
@@ -165,7 +129,43 @@ public class Client {
         }
     }
 
-    /***
+    /**
+     * Sélection des fichiers .wav à répertorier depuis le répertoire SharedFolder
+     * @return files
+     */
+    private static ArrayList<String> selectFiles() {
+        ArrayList<String> files = new ArrayList<>();
+
+        File localDir = new File(FILES_TO_SHARE_FOLDER);
+        File[] localFiles = localDir.listFiles();
+        int pos = 0;
+        for (File fileElt : localFiles) {
+            String fileName = fileElt.getName();
+            if (fileElt.isFile() && fileName.substring(Math.max(0, fileName.length() - 4)).equals(".wav")) {
+                pos++;
+                System.out.println(pos + ") " + fileName);
+            }
+        }
+        if (pos == 0) {
+            System.err.println("\u274c Le dossier shareFiles ne contient aucun fichier lisible. Ajouter des fichiers .wav et réessayer. ");
+        } else {
+            Scanner console = new Scanner(System.in);
+            char fileInput;
+            do {
+                System.out.print("\u270E Ajouter le n° du fichier à partager. Saisir (t) pour terminer la saisie : ");
+                fileInput = console.next().charAt(0);
+                if (Character.getNumericValue(fileInput) > 0 && Character.getNumericValue(fileInput) <= pos)
+                    files.add(localFiles[Character.getNumericValue(fileInput - 1)].getName());
+                else if (fileInput == 't')
+                    System.out.print("\u2714 Saisie terminée. Contact du serveur en cours... ");
+                else
+                    System.err.print("\u274c Saisie non reconnue. Réessayer : ");
+            } while (fileInput != 't');
+        }
+        return files;
+    }
+
+    /**
      * Demande des fichiers disponibles au serveur
      */
     private static void ask() {
@@ -235,7 +235,7 @@ public class Client {
     }
 
     /**
-     * Leccteur de morceau
+     * Lecteur de morceau
      * @param file
      */
     private static void actionMusic(FileInfo file) {
